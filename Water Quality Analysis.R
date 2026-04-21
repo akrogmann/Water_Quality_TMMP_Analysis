@@ -141,6 +141,16 @@ ggplot(data = wqclassification) +
   geom_boxplot(aes(x = SY, y = Salinity_ppt, Fill = Site, color = Site)) +
   geom_point(aes(x = SY, y = Salinity_ppt, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
 
+
+
+
+##Water Depth all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = Water_depth, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = Water_depth, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
+
+
+
 ##Factors of all sites grouped by island##
 ggplot(data = wqclassification) +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
@@ -162,6 +172,12 @@ ggplot(data = wqclassification) +
 
 
 
+##Water Depth by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = Water_depth, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = Water_depth, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+
+
 ##Factors of all sites grouped by Forest Type##
 ggplot(data = wqclassification) +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
@@ -180,6 +196,13 @@ ggplot(data = wqclassification) +
   geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
   geom_boxplot(aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, color = Forest_Type)) +
   geom_point(aes(x = SY, y = Salinity_ppt, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##Water Depth by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = Water_depth, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = Water_depth, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
 
 
 #wqbrewers1 <- wqbrewers %>% 
