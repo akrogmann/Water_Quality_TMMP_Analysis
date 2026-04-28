@@ -115,14 +115,26 @@ wqclassification <- wqraw %>%
 
 wqclassification$SY <- as.factor(wqclassification$SY)
 
+salrect_df <- data.frame(
+  xmin = c(-Inf, -Inf, -Inf),
+  xmax = c(Inf, Inf, Inf),
+  ymin = c(15, 10, 15),
+  ymax = c(35, 25, 20),
+  category = c("RHMA", "AVGE", "LARA") # Optional: add grouping
+)
 
 
 #test
 
+ggplot() +
+  geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = category), alpha = 0.3) +
+  geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Site, color = Site)) +
+  geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4) +
+  scale_fill_manual(values = c("RHMA" = "blue1", "AVGE" = "purple", "LARA" = "pink")) +
+  labs(x = "Year", y = "Salinity (ppt)")
 
 
-
-#Factors of all Sites#
+ #Factors of all Sites#
 ggplot(data = wqclassification) +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
             alpha = 0.1, fill = "lightblue") + #RHMA
@@ -156,7 +168,32 @@ ggplot(data = wqclassification) +
   geom_point(aes(x = SY, y = Temp, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
 
 
+##DO% all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = DO_percent, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = DO_percent, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
 
+##DO/mg/l all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = DO_mg_L, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = DO_mg_L, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
+
+##SPC all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = SPC, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = SPC, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##TDS all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = TDS, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = TDS, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##pH all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = pH, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = pH, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
 
 
 ##Factors of all sites grouped by island##
@@ -192,8 +229,33 @@ ggplot(data = wqclassification) +
   geom_point(aes(x = SY, y = Temp, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
 
 
+##DO% by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = DO_percent, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = DO_percent, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
 
 
+##DO/mg/L by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = DO_mg_L, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = DO_mg_L, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+
+##SPC by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = SPC, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = SPC, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##TDS by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = TDS, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = TDS, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##pH by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = pH, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = pH, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
 
 
 ##Factors of all sites grouped by Forest Type##
@@ -228,7 +290,34 @@ ggplot(data = wqclassification) +
   geom_point(aes(x = SY, y = Temp, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
 
 
+##DO% by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = DO_percent, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = DO_percent, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
 
+
+##DO/mg/L by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = DO_mg_L, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = DO_mg_L, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##SPC by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = SPC, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = SPC, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##TDS by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = TDS, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = TDS, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##pH by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = pH, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = pH, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
 
 
 #wqbrewers1 <- wqbrewers %>% 
