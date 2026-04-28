@@ -150,6 +150,14 @@ ggplot(data = wqclassification) +
   geom_point(aes(x = SY, y = Water_depth, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
 
 
+##Temp all sites##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
+
+
+
+
 
 ##Factors of all sites grouped by island##
 ggplot(data = wqclassification) +
@@ -178,6 +186,16 @@ ggplot(data = wqclassification) +
   geom_point(aes(x = SY, y = Water_depth, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
 
 
+##Temp by Islands##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+
+
+
+
+
+
 ##Factors of all sites grouped by Forest Type##
 ggplot(data = wqclassification) +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
@@ -202,6 +220,14 @@ ggplot(data = wqclassification) +
 ggplot(data = wqclassification) +
   geom_boxplot(aes(x = SY, y = Water_depth, Fill = Forest_Type, color = Forest_Type)) +
   geom_point(aes(x = SY, y = Water_depth, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
+
+##Temp by Forest Type##
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = SY, y = Temp, Fill = Forest_Type, color = Forest_Type)) +
+  geom_point(aes(x = SY, y = Temp, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+
+
 
 
 
