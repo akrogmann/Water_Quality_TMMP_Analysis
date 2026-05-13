@@ -113,45 +113,84 @@ wqclassification <- wqraw %>%
   )) %>% 
   group_by(SY)
 
+
 wqclassification$SY <- as.factor(wqclassification$SY)
 
+
+#salinity rectangles
 salrect_df <- data.frame(
   xmin = c(-Inf, -Inf, -Inf),
   xmax = c(Inf, Inf, Inf),
   ymin = c(15, 10, 15),
   ymax = c(35, 25, 20),
-  category = c("RHMA", "AVGE", "LARA") # Optional: add grouping
+  Ideal_Range = c("RHMA", "AVGE", "LARA") # Optional: add grouping
 )
 
+#salinity hlines
+  salhline_data <- data.frame(y = c(50, 20, 65, 35, 15, 55, 10, 25), type = factor(c(2, 2, 3, 3, 4, 1, 1, 1)), 
+                           stringsAsFactors = FALSE)
 
-#test
 
+###Testing####
+
+
+  geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
+    geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
+    geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
+    geom_hline (yintercept = 35, linetype = "dotted", color = "blue") +
+    geom_hline (yintercept = 15, linetype = "dotdash", color = "blue") +
+    geom_hline (yintercept = 55, linetype = "solid", color = "purple4") +
+    geom_hline (yintercept = 10, linetype = "solid", color = "purple4") +
+    geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
+
+
+
+
+
+
+#this line data works, but it doesnt work if i plug it in to my graph, idk
+    ggplot() +
+    geom_hline(data = salhline_data, 
+               aes(yintercept = y, linetype = type, colour = type)) +
+    scale_colour_manual(values = c("blue4", "blue", "blue", "purple4"), 
+                        labels = c("LARA", "RHMA", "LARA + RHMA", "AVGE"),
+                        name = "Key") +
+    scale_linetype_manual(values = 1:4, 
+                          labels = c("LARA", "RHMA", "LARA + RHMA", "AVGE"),
+                          name = "Key")    
+    
+    
+###TEST Concluded ####
+
+  
+  
+  #Salinity of all sites
 ggplot() +
-  geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = category), alpha = 0.3) +
-  geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Site, color = Site)) +
-  geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4) +
-  scale_fill_manual(values = c("RHMA" = "blue1", "AVGE" = "purple", "LARA" = "pink")) +
-  labs(x = "Year", y = "Salinity (ppt)")
-
+    geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhline_data, 
+               aes(yintercept = y, linetype = type)) +
+    scale_linetype_manual(values = 1:4, 
+                          labels = c("AVGE", "LARA", "RHMA", "LARA + RHMA"),
+                          name = "Linetype") +
+    scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
+    geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site,), position = position_dodge(width = 0.75), size = 0.4) +
+    labs(x = "Year", y = "Salinity (ppt)")
 
  #Factors of all Sites#
-ggplot(data = wqclassification) +
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
-            alpha = 0.1, fill = "lightblue") + #RHMA
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 10, ymax = 25), alpha = 0.5, fill = "red") + #AVGE
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 20), alpha = 0.5, fill = "blue") + #LARA
-  annotate("rect", xmin=-Inf, xmax=Inf, 
-           ymin=10, ymax=35, alpha=0.9, fill = "lightblue") +
-  geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
-  geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
-  geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
-  geom_hline (yintercept = 35, linetype = "dotted", color = "blue") +
-  geom_hline (yintercept = 15, linetype = "dotdash", color = "blue") +
-  geom_hline (yintercept = 55, linetype = "solid", color = "purple4") +
-  geom_hline (yintercept = 10, linetype = "solid", color = "purple4") +
-  geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
-  geom_boxplot(aes(x = SY, y = Salinity_ppt, Fill = Site, color = Site)) +
-  geom_point(aes(x = SY, y = Salinity_ppt, group = Site, fill = Site), position = position_dodge(width = 0.75), size = 0.4)
+  
+  #sal of all sites
+  ggplot() +
+    geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhline_data, 
+               aes(yintercept = y, linetype = type)) +
+    scale_linetype_manual(values = 1:4, 
+                          labels = c("AVGE", "LARA", "RHMA", "LARA + RHMA"),
+                          name = "Linetype") +
+    scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
+    geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site,), position = position_dodge(width = 0.75), size = 0.4) +
+    labs(x = "Year", y = "Salinity (ppt)")
 
 
 
@@ -197,23 +236,17 @@ ggplot(data = wqclassification) +
 
 
 ##Factors of all sites grouped by island##
-ggplot(data = wqclassification) +
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
-            alpha = 0.1, fill = "lightblue") + #RHMA
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 10, ymax = 25), alpha = 0.5, fill = "red") + #AVGE
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 20), alpha = 0.5, fill = "blue") + #LARA
-  annotate("rect", xmin=-Inf, xmax=Inf, 
-           ymin=10, ymax=35, alpha=0.9, fill = "lightblue") +
-  geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
-  geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
-  geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
-  geom_hline (yintercept = 35, linetype = "dotted", color = "blue") +
-  geom_hline (yintercept = 15, linetype = "dotdash", color = "blue") +
-  geom_hline (yintercept = 55, linetype = "solid", color = "purple4") +
-  geom_hline (yintercept = 10, linetype = "solid", color = "purple4") +
-  geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
-  geom_boxplot(aes(x = SY, y = Salinity_ppt, Fill = Island, color = Island)) +
-  geom_point(aes(x = SY, y = Salinity_ppt, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+ggplot() +
+  geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhline_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1:4, 
+                        labels = c("AVGE", "LARA", "RHMA", "LARA + RHMA"),
+                        name = "Linetype") +
+  scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Island)) +
+  geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island,), position = position_dodge(width = 0.75), size = 0.4) +
+  labs(x = "Year", y = "Salinity (ppt)")
 
 
 
@@ -221,6 +254,7 @@ ggplot(data = wqclassification) +
 ggplot(data = wqclassification) +
   geom_boxplot(aes(x = SY, y = Water_depth, Fill = Island, color = Island)) +
   geom_point(aes(x = SY, y = Water_depth, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
+
 
 
 ##Temp by Islands##
@@ -259,23 +293,17 @@ ggplot(data = wqclassification) +
 
 
 ##Factors of all sites grouped by Forest Type##
-ggplot(data = wqclassification) +
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 35),
-            alpha = 0.1, fill = "lightblue") + #RHMA
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 10, ymax = 25), alpha = 0.5, fill = "red") + #AVGE
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 15, ymax = 20), alpha = 0.5, fill = "blue") + #LARA
-  annotate("rect", xmin=-Inf, xmax=Inf, 
-           ymin=10, ymax=35, alpha=0.9, fill = "lightblue") +
-  geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
-  geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
-  geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
-  geom_hline (yintercept = 35, linetype = "dotted", color = "blue") +
-  geom_hline (yintercept = 15, linetype = "dotdash", color = "blue") +
-  geom_hline (yintercept = 55, linetype = "solid", color = "purple4") +
-  geom_hline (yintercept = 10, linetype = "solid", color = "purple4") +
-  geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
-  geom_boxplot(aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, color = Forest_Type)) +
-  geom_point(aes(x = SY, y = Salinity_ppt, group = Forest_Type, fill = Forest_Type), position = position_dodge(width = 0.75), size = 0.4)
+ggplot() +
+  geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhline_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1:4, 
+                        labels = c("AVGE", "LARA", "RHMA", "LARA + RHMA"),
+                        name = "Linetype") +
+  scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
+  geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type,), position = position_dodge(width = 0.75), size = 0.4) +
+  labs(x = "Year", y = "Salinity (ppt)")
 
 
 ##Water Depth by Forest Type##
