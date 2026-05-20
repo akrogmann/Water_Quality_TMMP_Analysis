@@ -21,25 +21,25 @@ TreeMeasurements <- read_csv("QA_QC TMMP Data 6-25-25.csv")
 #View Your data:
 glimpse(wqraw)
 
-
+#################Old Data#########################################################
 #str(wqraw)
 #wqraw$Date_Survey <- mdy(wqraw$Date_Survey)
 #str(wqraw)
 #str(wqbrewers)
-wqbrewers$Date_Survey <- as.factor(wqbrewers$Date_Survey)
-wqbrewers$SY <- as.factor(wqbrewers$SY)
+#wqbrewers$Date_Survey <- as.factor(wqbrewers$Date_Survey)
+#wqbrewers$SY <- as.factor(wqbrewers$SY)
 
 #Separation focused on Plots of Brewers
-wqbrewers <- wqraw %>% 
-  select(Site:Date_Survey, Water_depth:pH) %>% 
-  filter((Site == "Brewers Bay") & (Plot == "A" | Plot == "B" | Plot == "C")) %>% 
-  group_by(SY) %>% 
-  mutate(meansal = mean(Salinity_ppt), meanwd = mean(Water_depth), meantemp = mean(Temp), meandop = mean(DO_percent), meandomgl = mean(DO_mg_L), meanspc = mean(SPC), meantds = mean(TDS), meanph = mean(pH)) %>%
-  distinct() %>% 
-  arrange(Date_Survey)
+#wqbrewers <- wqraw %>% 
+#  select(Site:Date_Survey, Water_depth:pH) %>% 
+#  filter((Site == "Brewers Bay") & (Plot == "A" | Plot == "B" | Plot == "C")) %>% 
+#  group_by(SY) %>% 
+#  mutate(meansal = mean(Salinity_ppt), meanwd = mean(Water_depth), meantemp = mean(Temp), meandop = mean(DO_percent), meandomgl = mean(DO_mg_L), meanspc = mean(SPC), meantds = mean(TDS), meanph = mean(pH)) %>%
+#  distinct() %>% 
+#  arrange(Date_Survey)
 
-wqbrewers$SY <- as.factor(wqbrewers$SY)
-
+#wqbrewers$SY <- as.factor(wqbrewers$SY)
+###############################################################################
 
 #Now lets separite sites by tree type
 RHMA<-TreeMeasurements%>%
@@ -55,6 +55,25 @@ unique(RHMA$Site)
 
 RHMAwq<-wqraw%>%
   filter(Site %in% RHMA$Site)
+
+RHMAwq<-RHMAwq%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+RHMAwq<-RHMAwq%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
+
+RHMAwq$Syringe_used<-as.factor(RHMAwq$Syringe_used)
+RHMAwq$SY<-as.factor(RHMAwq$SY)
+
+unique(RHMAwq$Syringe_used)
 
 unique(RHMAwq$Site)
 
@@ -85,11 +104,15 @@ AVGEwq<-AVGEwq%>%
 AVGEwq<-AVGEwq%>%
   mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
 
+AVGEwq$Syringe_used<-as.factor(AVGEwq$Syringe_used)
+AVGEwq$SY<-as.factor(AVGEwq$SY)
+
 unique(AVGEwq$Syringe_used)
 
 unique(AVGEwq$Site)
 #excellent!
 
+#Now do LARA
 LARA<-TreeMeasurements%>%
   filter(Species=="LARA")
 
@@ -102,12 +125,32 @@ unique(LARA$Site)
 
 LARAwq<-wqraw%>%
   filter(Site %in% LARA$Site)
+
+LARAwq<-LARAwq%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+LARAwq<-LARAwq%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
+
+LARAwq$Syringe_used<-as.factor(LARAwq$Syringe_used)
+LARAwq$SY<-as.factor(LARAwq$SY)
+
+unique(LARAwq$Syringe_used)
+
 unique(LARAwq$Site)
 #yay!!!
 
 
 
-#All WQ Classification for Island#
+#All WQ Classification for Island and syringe use#
 wqclassification <- wqraw %>% 
   select(Island:Date_Survey, Water_depth:Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
@@ -186,21 +229,6 @@ wqclassification <- wqraw %>%
 
 wqclassification$SY <- as.factor(wqclassification$SY)
 
-wqclassification<-wqclassification%>%
-  mutate(
-    Syringe_used=recode(Syringe_used,
-                        "N"="No",
-                        "Y"="Yes",
-                        "no"="No",
-                        "yes"="Yes",
-                        "n"="No")
-  )
-
-AVGEwq$Syringe_used<-as.factor(AVGEwq$Syringe_used)
-AVGEwq$SY<-as.factor(AVGEwq$SY)
-
-AVGEwq<-AVGEwq%>%
-  mutate(Syringe_used=replace_na(Syringe_used, "Unknown"))
 
 
 #salinity rectangles
@@ -212,22 +240,61 @@ salrect_df <- data.frame(
   Ideal_Range = c("RHMA", "AVGE", "LARA") # Optional: add grouping
 )
 
+#Salinity rectange RHMA
+salrectRHMA_df <- data.frame(
+  xmin = (-Inf),
+  xmax = (Inf),
+  ymin = (15),
+  ymax = (35),
+  Ideal_Range = ("RHMA") # Optional: add grouping
+)
+
+#Salinity rectangle LARA
+salrectLARA_df <- data.frame(
+  xmin = (-Inf),
+  xmax = (Inf),
+  ymin = (15),
+  ymax = (20),
+  Ideal_Range = ("LARA") # Optional: add grouping
+)
+
+#Salinity rectangle AVGE
+salrectAVGE_df <- data.frame(
+  xmin = (-Inf),
+  xmax = (Inf),
+  ymin = (10),
+  ymax = (25),
+  Ideal_Range = ("AVGE") # Optional: add grouping
+)
+
 #salinity hlines
-  salhline_data <- data.frame(y = c(50, 20, 65, 35, 15, 55, 10, 25), type = factor(c(2, 2, 3, 3, 4, 1, 1, 1)), 
+salhline_data <- data.frame(y = c(50, 20, 65, 35, 15, 55, 10, 25), type = factor(c(2, 2, 3, 3, 4, 1, 1, 1)), 
                            stringsAsFactors = FALSE)
 
+#Salinity hlines RHMA
+salhlineRHMA_data <- data.frame(y = (65), type = factor(1), 
+                            stringsAsFactors = FALSE)
 
-###Testing####
+#Salinity hlines LARA
+salhlineLARA_data <- data.frame(y = (50), type = factor(1), 
+                                stringsAsFactors = FALSE)
+  
+#Salinity hlines AVGE
+salhlineAVGE_data <- data.frame(y = (55), type = factor(1), 
+                                stringsAsFactors = FALSE)
+
+
+###Testing#####################################################################
 
 #Old hline data points, bad now because no legend.
-  geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
-    geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
-    geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
-    geom_hline (yintercept = 35, linetype = "dotted", color = "blue") +
-    geom_hline (yintercept = 15, linetype = "dotdash", color = "blue") +
-    geom_hline (yintercept = 55, linetype = "solid", color = "purple4") +
-    geom_hline (yintercept = 10, linetype = "solid", color = "purple4") +
-    geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
+#  geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
+#    geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
+#    geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
+#    geom_hline (yintercept = 35, linetype = "dotted", color = "blue") +
+#    geom_hline (yintercept = 15, linetype = "dotdash", color = "blue") +
+#    geom_hline (yintercept = 55, linetype = "solid", color = "purple4") +
+#    geom_hline (yintercept = 10, linetype = "solid", color = "purple4") +
+#    geom_hline (yintercept = 25, linetype = "solid", color = "purple4") +
 
 
 
@@ -235,35 +302,63 @@ salrect_df <- data.frame(
 
 
 #this line data works, but it doesnt work if i plug it in to my graph.
-    ggplot() +
-    geom_hline(data = salhline_data, 
-               aes(yintercept = y, linetype = type, colour = type)) +
-    scale_colour_manual(values = c("blue4", "blue", "blue", "purple4"), 
-                        labels = c("LARA", "RHMA", "LARA + RHMA", "AVGE"),
-                        name = "Key") +
-    scale_linetype_manual(values = 1:4, 
-                          labels = c("LARA", "RHMA", "LARA + RHMA", "AVGE"),
-                          name = "Key")    
+#    ggplot() +
+#    geom_hline(data = salhline_data, 
+#               aes(yintercept = y, linetype = type, colour = type)) +
+#    scale_colour_manual(values = c("blue4", "blue", "blue", "purple4"), 
+#                        labels = c("LARA", "RHMA", "LARA + RHMA", "AVGE"),
+#                        name = "Key") +
+#    scale_linetype_manual(values = 1:4, 
+#                          labels = c("LARA", "RHMA", "LARA + RHMA", "AVGE"),
+#                          name = "Key")    
     
     
-###TEST Concluded ####
+###TEST Concluded ############################################################
 
   
   
   #Salinity of all AVGE sites
 ggplot() +
-    geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
-    geom_hline(data = salhline_data, 
+    geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhlineAVGE_data, 
                aes(yintercept = y, linetype = type)) +
-    scale_linetype_manual(values = 1:4, 
-                          labels = c("AVGE", "LARA", "RHMA", "LARA + RHMA"),
-                          name = "Linetype") +
-    scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
+    scale_linetype_manual(values = 1, 
+                          labels = ("AVGE"),
+                          name = "Physiological Limit") +
+    scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = AVGEwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
     labs(x = "Year", y = "Salinity (ppt)")
   
-
+  #Salinity of all RHMA sites
+  
+  ggplot() +
+    geom_rect(data = salrectRHMA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhlineRHMA_data, 
+               aes(yintercept = y, linetype = type)) +
+    scale_linetype_manual(values = 1, 
+                          labels = ("RHMA"),
+                          name = "Physiological Limit") +
+    scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
+    geom_boxplot(data = RHMAwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+    labs(x = "Year", y = "Salinity (ppt)")
+  
+  #Salinity of all LARA sites
+  
+  ggplot() +
+    geom_rect(data = salrectLARA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhlineLARA_data, 
+               aes(yintercept = y, linetype = type)) +
+    scale_linetype_manual(values = 1, 
+                          labels = ("LARA"),
+                          name = "Physiological Limit") +
+    scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
+    geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+    labs(x = "Year", y = "Salinity (ppt)")
+  
+  
 
  #Factors of all Sites#
   
