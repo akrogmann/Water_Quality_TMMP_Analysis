@@ -133,7 +133,7 @@ salrect_df <- data.frame(
 
 ###Testing####
 
-
+#Old hline data points, bad now because no legend.
   geom_hline (yintercept = 50, linetype = "dashed", color = "blue4") + #50ppt limits growth of LARA, 60ppt ceases growth of RHMA saplings
     geom_hline (yintercept = 20, linetype = "dashed", color = "blue4") +
     geom_hline (yintercept = 65, linetype = "dotted", color = "blue") +
@@ -148,7 +148,7 @@ salrect_df <- data.frame(
 
 
 
-#this line data works, but it doesnt work if i plug it in to my graph, idk
+#this line data works, but it doesnt work if i plug it in to my graph.
     ggplot() +
     geom_hline(data = salhline_data, 
                aes(yintercept = y, linetype = type, colour = type)) +
