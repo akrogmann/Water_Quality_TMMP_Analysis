@@ -5,10 +5,13 @@
 library(tidyverse)
 library(lubridate)
 library(patchwork)
+library(readr)
 
 
 #input your data
 wqraw <- read.csv("C:/Users/adamk/Desktop/WQ Labwork/Adam WQ Dont Analyze This - Sheet1.csv")
+
+TreeMeasurements <- read_csv("QA_QC TMMP Data 6-25-25.csv")
 
 ##############Goals############################################################
 #Need to separate by year site, and by plot
@@ -37,9 +40,76 @@ wqbrewers <- wqraw %>%
 
 wqbrewers$SY <- as.factor(wqbrewers$SY)
 
+
+#Now lets separite sites by tree type
+RHMA<-TreeMeasurements%>%
+  filter(Species=="RHMA")
+
+
+unique(RHMA$Site)
+#[1] "Compass Point"    "Salt River"       "Krause Lagoon"    "STEER Fringe"    
+#[5] "Princess Bay"     "Magens Bay"       "STEER Basin"      "Turner Bay"      
+#[9] "Lameshur Bay"     "Water Creek"      "Brewers Bay"      "Mary Creek"      
+#[13] "Great Pond"       "Mandahl Bay"      "Perseverance Bay" "Vessup Bay" 
+
+
+RHMAwq<-wqraw%>%
+  filter(Site %in% RHMA$Site)
+
+unique(RHMAwq$Site)
+
+#now do AVGE
+AVGE<-TreeMeasurements%>%
+  filter(Species=="AVGE")%>%
+  filter(!(is.na(Site)))
+
+unique(AVGE$Site)
+# "Salt River"    "Reef Bay"      "Lameshur Bay"  "Mary Creek"    "Southgate"    
+#[6] "Compass Point" "Great Pond"    "Water Creek"   "STEER Basin"
+
+AVGEwq<-wqraw%>%
+  filter(Site %in% AVGE$Site)
+
+
+AVGEwq<-AVGEwq%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+AVGEwq<-AVGEwq%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
+
+unique(AVGEwq$Syringe_used)
+
+unique(AVGEwq$Site)
+#excellent!
+
+LARA<-TreeMeasurements%>%
+  filter(Species=="LARA")
+
+unique(LARA$Site)
+#[1] "Salt River"       "Brewers Bay"      "Mary Creek"       "Turner Bay"      
+#[5] "STEER Fringe"     "STEER Basin"      "Southgate"        "Reef Bay"        
+#[9] "Water Creek"      "Compass Point"    "Francis Bay"      "Magens Bay"      
+#[13] "Princess Bay"     "Mandahl Bay"      "Perseverance Bay" "Vessup Bay"      
+#[17] "Lameshur Bay"
+
+LARAwq<-wqraw%>%
+  filter(Site %in% LARA$Site)
+unique(LARAwq$Site)
+#yay!!!
+
+
+
 #All WQ Classification for Island#
 wqclassification <- wqraw %>% 
-  select(Island:Date_Survey, Water_depth:pH) %>% 
+  select(Island:Date_Survey, Water_depth:Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/21/2021") 
@@ -116,6 +186,22 @@ wqclassification <- wqraw %>%
 
 wqclassification$SY <- as.factor(wqclassification$SY)
 
+wqclassification<-wqclassification%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )
+
+AVGEwq$Syringe_used<-as.factor(AVGEwq$Syringe_used)
+AVGEwq$SY<-as.factor(AVGEwq$SY)
+
+AVGEwq<-AVGEwq%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown"))
+
 
 #salinity rectangles
 salrect_df <- data.frame(
@@ -164,7 +250,7 @@ salrect_df <- data.frame(
 
   
   
-  #Salinity of all sites
+  #Salinity of all AVGE sites
 ggplot() +
     geom_rect(data = salrect_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
     geom_hline(data = salhline_data, 
@@ -173,9 +259,11 @@ ggplot() +
                           labels = c("AVGE", "LARA", "RHMA", "LARA + RHMA"),
                           name = "Linetype") +
     scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
-    geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Site)) +
-    geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site,), position = position_dodge(width = 0.75), size = 0.4) +
+    geom_boxplot(data = AVGEwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
     labs(x = "Year", y = "Salinity (ppt)")
+  
+
 
  #Factors of all Sites#
   
