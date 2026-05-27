@@ -17,6 +17,14 @@ STTtempraw22 <- read.table("STT Buoy Data.txt")
 STTtempraw23 <- read.table("STT Buoy Data23.txt")
 STTtempraw24 <- read.table("STT Buoy Data24.txt")
 
+STJtempraw22 <- read.table("STJ Buoy Data22.txt")
+STJtempraw23 <- read.table("STJ Buoy Data23.txt")
+STJtempraw24 <- read.table("STJ Buoy Data24.txt")
+
+STXtempraw22 <- read.table("STX Buoy Data22.txt")
+STXtempraw23 <- read.table("STX Buoy Data23.txt")
+STXtempraw24 <- read.table("STX Buoy Data24.txt")
+
 ##############Goals############################################################
 #Need to separate by year site, and by plot
 #Then we need to graph means against each other.
@@ -225,6 +233,48 @@ RHMASTXTemp<-RHMASTXTemp%>%
                         "n"="No")
   )%>% 
   filter(nzchar(as.character(Syringe_used)))
+
+#Here we try to incorporate STX bouy data#
+
+STXtemp22 <- STXtempraw22 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STXtemp22$Year <- as.factor(STXtemp22$Year)
+#27.97864
+
+STXtemp23 <- STXtempraw23 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STXtemp23$Year <- as.factor(STXtemp23$Year)
+#28.58
+
+STXtemp24 <- STXtempraw24 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STXtemp24$Year <- as.factor(STXtemp24$Year)
+#29.19874
+
+STXtemppoints <- data.frame(
+  x = c(2022, 2023, 2024),
+  y = c(27.97864, 28.58, 29.19874)
+)
+STXtemppoints$x<-as.factor(STXtemppoints$x)
+
+STXtemppointslimit <- data.frame(
+  x = c(2022, 2023, 2024),
+  y = c(36.97864, 37.58, 38.19874)
+)
+STXtemppointslimit$x<-as.factor(STXtemppointslimit$x)
+
 ################################################################################
 
 #WQ classification for just the STT sites#
@@ -307,7 +357,7 @@ wqSTTTemp <- wqraw %>%
 
 wqSTTTemp$SY <- as.factor(wqSTTTemp$SY)
 
-#Now Just look at the STX sites that have RHMA#
+#Now Just look at the STT sites that have RHMA#
 RHMA<-TreeMeasurements%>%
   filter(Species=="RHMA")
 
@@ -338,6 +388,7 @@ STTtemp22 <- STTtempraw22 %>%
   mutate(averagetemp = mean(Temp))
 
 STTtemp22$Year <- as.factor(STTtemp22$Year)
+#28.20127
 
 STTtemp23 <- STTtempraw23 %>% 
   rename(Year = V1, Temp = V15) %>% 
@@ -346,6 +397,7 @@ STTtemp23 <- STTtempraw23 %>%
   mutate(averagetemp = mean(Temp))
 
 STTtemp23$Year <- as.factor(STTtemp23$Year)
+#27.66023
 
 STTtemp24 <- STTtempraw24 %>% 
   rename(Year = V1, Temp = V15) %>% 
@@ -354,6 +406,19 @@ STTtemp24 <- STTtempraw24 %>%
   mutate(averagetemp = mean(Temp))
 
 STTtemp24$Year <- as.factor(STTtemp24$Year)
+#29.701
+
+STTtemppoints <- data.frame(
+  x = c(2022, 2023, 2024),
+  y = c(28.20127, 27.66023, 29.701)
+)
+STTtemppoints$x<-as.factor(STTtemppoints$x)
+
+STTtemppointslimit <- data.frame(
+  x = c(2022, 2023, 2024),
+  y = c(37.20127, 36.66023, 38.701)
+)
+STTtemppointslimit$x<-as.factor(STTtemppointslimit$x)
 
 ################################################################################
 
@@ -458,6 +523,47 @@ RHMASTJTemp<-RHMASTJTemp%>%
 
 RHMASTJTemp<-RHMASTJTemp%>%
   mutate(Syringe_used=replace_na(Syringe_used, "Unknown"))
+
+#Here we try to incorporate STJ bouy data#
+
+STJtemp22 <- STJtempraw22 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STJtemp22$Year <- as.factor(STJtemp22$Year)
+#28.49283
+
+STJtemp23 <- STJtempraw23 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STJtemp23$Year <- as.factor(STJtemp23$Year)
+#28.82254
+
+STJtemp24 <- STJtempraw24 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STJtemp24$Year <- as.factor(STJtemp24$Year)
+#27.77537
+
+STJtemppoints <- data.frame(
+  x = c(2022, 2023, 2024),
+  y = c(28.49283, 28.82254, 27.77537)
+)
+STJtemppoints$x<-as.factor(STJtemppoints$x)
+
+STJtemppointslimit <- data.frame(
+  x = c(2022, 2023, 2024),
+  y = c(37.49283, 37.82254, 36.77537)
+)
+STJtemppointslimit$x<-as.factor(STJtemppointslimit$x)
 
 
 
@@ -835,7 +941,11 @@ ggplot(data = wqclassification) +
 ##STX that have RHMA sorted by island##
 ggplot(data = RHMASTXTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
-  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  geom_line(data = STXtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
+  geom_line(data = STXtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
+  scale_linetype_manual(values = c(2, 1),
+                        name = "Average Yearly Temp (C)")
 
 ##STX sites that have RHMA##
 ggplot(data = RHMASTXTemp) +
@@ -846,9 +956,11 @@ ggplot(data = RHMASTXTemp) +
 ggplot(data = RHMASTTTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
   geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  geom_point(data = STTtemp22, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0) +
-  geom_point(data = STTtemp23, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0) +
-  geom_point(data = STTtemp24, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0)
+  geom_line(data = STTtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
+  geom_line(data = STTtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
+  scale_linetype_manual(values = c(2, 1),
+                        name = "Average Yearly Temp (C)")
+  
 
 ##STT sites that have RHMA##
 ggplot(data = RHMASTTTemp) +
@@ -858,7 +970,11 @@ ggplot(data = RHMASTTTemp) +
 ##STJ that have RHMA sorted by island##
 ggplot(data = RHMASTJTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
-  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  geom_line(data = STJtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
+  geom_line(data = STJtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
+  scale_linetype_manual(values = c(2, 1),
+                        name = "Average Yearly Temp (C)")
 
 ##STJ sites that have RHMA##
 ggplot(data = RHMASTJTemp) +
