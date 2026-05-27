@@ -14,6 +14,8 @@ wqraw <- read.csv("C:/Users/adamk/Desktop/WQ Labwork/Adam WQ Dont Analyze This -
 TreeMeasurements <- read_csv("QA_QC TMMP Data 6-25-25.csv")
 
 STTtempraw22 <- read.table("STT Buoy Data.txt")
+STTtempraw23 <- read.table("STT Buoy Data23.txt")
+STTtempraw24 <- read.table("STT Buoy Data24.txt")
 
 ##############Goals############################################################
 #Need to separate by year site, and by plot
@@ -336,6 +338,22 @@ STTtemp22 <- STTtempraw22 %>%
   mutate(averagetemp = mean(Temp))
 
 STTtemp22$Year <- as.factor(STTtemp22$Year)
+
+STTtemp23 <- STTtempraw23 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STTtemp23$Year <- as.factor(STTtemp23$Year)
+
+STTtemp24 <- STTtempraw24 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STTtemp24$Year <- as.factor(STTtemp24$Year)
 
 ################################################################################
 
@@ -828,7 +846,9 @@ ggplot(data = RHMASTXTemp) +
 ggplot(data = RHMASTTTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
   geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  geom_point(data = STTtemp22, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0)
+  geom_point(data = STTtemp22, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0) +
+  geom_point(data = STTtemp23, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0) +
+  geom_point(data = STTtemp24, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0)
 
 ##STT sites that have RHMA##
 ggplot(data = RHMASTTTemp) +
