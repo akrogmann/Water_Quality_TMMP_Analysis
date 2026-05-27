@@ -950,7 +950,11 @@ ggplot(data = RHMASTXTemp) +
 ##STX sites that have RHMA##
 ggplot(data = RHMASTXTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
-  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  geom_line(data = STXtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
+  geom_line(data = STXtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
+  scale_linetype_manual(values = c(2, 1),
+                        name = "Average Yearly Temp (C)")
 
 ##STT that have RHMA sorted by island##
 ggplot(data = RHMASTTTemp) +
@@ -965,7 +969,11 @@ ggplot(data = RHMASTTTemp) +
 ##STT sites that have RHMA##
 ggplot(data = RHMASTTTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
-  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  geom_line(data = STTtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
+  geom_line(data = STTtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
+  scale_linetype_manual(values = c(2, 1),
+                        name = "Average Yearly Temp (C)")
 
 ##STJ that have RHMA sorted by island##
 ggplot(data = RHMASTJTemp) +
@@ -979,7 +987,11 @@ ggplot(data = RHMASTJTemp) +
 ##STJ sites that have RHMA##
 ggplot(data = RHMASTJTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
-  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  geom_line(data = STJtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
+  geom_line(data = STJtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
+  scale_linetype_manual(values = c(2, 1),
+                        name = "Average Yearly Temp (C)")
 
 ################################################################################
 
