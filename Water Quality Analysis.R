@@ -221,6 +221,110 @@ RHMASTXTemp<-RHMASTXTemp%>%
                         "n"="No")
   )%>% 
   filter(nzchar(as.character(Syringe_used)))
+################################################################################
+
+#WQ classification for just the STT sites#
+wqSTTTemp <- wqraw %>% 
+  select(Island:Date_Survey, Temp, Syringe_used) %>% 
+  filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/21/2021") 
+         | Date_Survey == ("10/14/2021") 
+         | Date_Survey == ("10/22/2021") 
+         | Date_Survey == ("11/30/2021") 
+         | Date_Survey == ("10/1/2021") 
+         | Date_Survey == ("10/12/2021") 
+         | Date_Survey == ("9/23/2021") 
+         | Date_Survey == ("10/19/2021") 
+         | Date_Survey == ("2/22/2022") 
+         | Date_Survey == ("10/15/2021") 
+         | Date_Survey == ("9/28/2021") 
+         | Date_Survey == ("9/30/2021") 
+         | Date_Survey == ("10/28/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("10/26/2021") 
+         | Date_Survey == ("4/5/2022") 
+         | Date_Survey == ("10/25/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("12/3/2021") 
+         | Date_Survey == ("12/8/2021") 
+         | Date_Survey == ("12/2/2021") 
+         | Date_Survey == ("12/10/2021") 
+         | Date_Survey == ("2/25/2022") 
+         | Date_Survey == ("11/15/2021") 
+         | Date_Survey == ("11/17/2021") 
+         | Date_Survey == ("11/18/2021") 
+         | Date_Survey == ("11/16/2021") 
+         | Date_Survey == ("11/22/2022") 
+         | Date_Survey == ("11/23/2022") 
+         | Date_Survey == ("11/11/2022") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("1/12/2023") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("2/22/2023") 
+         | Date_Survey == ("2/21/2023") 
+         | Date_Survey == ("2/23/2023") 
+         | Date_Survey == ("1/23/2023") 
+         | Date_Survey == ("2/16/2023") 
+         | Date_Survey == ("2/15/2023") 
+         | Date_Survey == ("2/17/2023") 
+         | Date_Survey == ("6/5/2024") 
+         | Date_Survey == ("6/10/2024") 
+         | Date_Survey == ("6/17/2024") 
+         | Date_Survey == ("6/11/2024") 
+         | Date_Survey == ("7/9/2024") 
+         | Date_Survey == ("7/19/2024") 
+         | Date_Survey == ("6/7/2024") 
+         | Date_Survey == ("6/12/2024") 
+         | Date_Survey == ("6/18/2024") 
+         | Date_Survey == ("7/8/2024") 
+         | Date_Survey == ("7/5/2024") 
+         | Date_Survey == ("6/13/2024") 
+         | Date_Survey == ("7/17/2024") 
+         | Date_Survey == ("8/6/2024") 
+         | Date_Survey == ("8/9/2024") 
+         | Date_Survey == ("7/18/2024") 
+         | Date_Survey == ("9/18/2024") 
+         | Date_Survey == ("8/7/2024") 
+         | Date_Survey == ("8/8/2024") 
+         | Date_Survey == ("7/22/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/23/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/22/2024")) %>% 
+  filter(Island == ("St Thomas")) %>% 
+  mutate(Forest_Type = case_when(
+    Site %in% c("Great Pond", "Southgate", "Francis Bay", "Lameshur Bay", "Reef Bay", "Compass Point", "Perseverance Bay") ~ "Salt Pond",
+    Site %in% c("Krause Lagoon", "Salt River", "Mary Creek", "Princess Bay", "Turner Bay", "Water Creek", "Brewers Bay", "Mandahl Bay", "STEER Fringe", "Vessup Bay") ~ "Fringe",
+    Site %in% c("STEER Basin", "Magens Bay") ~ "Basin"
+  )) %>% 
+  group_by(SY)
+
+
+wqSTTTemp$SY <- as.factor(wqSTTTemp$SY)
+
+#Now Just look at the STX sites that have RHMA#
+RHMA<-TreeMeasurements%>%
+  filter(Species=="RHMA")
+
+RHMASTTTemp<-wqSTTTemp%>%
+  filter(Site %in% RHMA$Site)
+#WOO!#
+
+RHMASTTTemp<-RHMASTTTemp%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+RHMASTTTemp<-RHMASTTTemp%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown"))
+
 
 ################################################################################
 
@@ -601,6 +705,17 @@ ggplot(data = RHMASTXTemp) +
 ggplot(data = RHMASTXTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
   geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+
+##STT that have RHMA sorted by island##
+ggplot(data = RHMASTTTemp) +
+  geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
+  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+
+##STT sites that have RHMA##
+ggplot(data = RHMASTTTemp) +
+  geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
+  geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+
 
 
 
