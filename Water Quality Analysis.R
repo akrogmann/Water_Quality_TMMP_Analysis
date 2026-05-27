@@ -13,6 +13,8 @@ wqraw <- read.csv("C:/Users/adamk/Desktop/WQ Labwork/Adam WQ Dont Analyze This -
 
 TreeMeasurements <- read_csv("QA_QC TMMP Data 6-25-25.csv")
 
+STTtempraw22 <- read.table("STT Buoy Data.txt")
+
 ##############Goals############################################################
 #Need to separate by year site, and by plot
 #Then we need to graph means against each other.
@@ -324,6 +326,17 @@ RHMASTTTemp<-RHMASTTTemp%>%
 
 RHMASTTTemp<-RHMASTTTemp%>%
   mutate(Syringe_used=replace_na(Syringe_used, "Unknown"))
+
+#Here we try to incorporate STT bouy data#
+
+STTtemp22 <- STTtempraw22 %>% 
+  rename(Year = V1, Temp = V15) %>% 
+  select(Year, Temp) %>%
+  filter(Temp < 900) %>% 
+  mutate(averagetemp = mean(Temp))
+
+STTtemp22$Year <- as.factor(STTtemp22$Year)
+
 ################################################################################
 
 #WQ classification for just the STJ sites#
@@ -427,8 +440,6 @@ RHMASTJTemp<-RHMASTJTemp%>%
 
 RHMASTJTemp<-RHMASTJTemp%>%
   mutate(Syringe_used=replace_na(Syringe_used, "Unknown"))
-
-
 
 
 
@@ -795,12 +806,13 @@ ggplot(data = wqclassification) +
   geom_boxplot(aes(x = SY, y = Water_depth, Fill = Island, color = Island)) +
   geom_point(aes(x = SY, y = Water_depth, group = Island, fill = Island), position = position_dodge(width = 0.75), size = 0.4)
 
-############TESTING##############################################################
 
 ##Temp by Islands##
 ggplot(data = wqclassification) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
   geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.4)
+
+##############Separating RHMA by island########################################
 
 ##STX that have RHMA sorted by island##
 ggplot(data = RHMASTXTemp) +
@@ -815,7 +827,8 @@ ggplot(data = RHMASTXTemp) +
 ##STT that have RHMA sorted by island##
 ggplot(data = RHMASTTTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Island, color = Island)) +
-  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
+  geom_point(aes(x = SY, y = Temp, group = Island, fill = Island, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  geom_point(data = STTtemp22, aes(x = Year, y = averagetemp), color = "hotpink", size = 2.0)
 
 ##STT sites that have RHMA##
 ggplot(data = RHMASTTTemp) +
@@ -832,10 +845,8 @@ ggplot(data = RHMASTJTemp) +
   geom_boxplot(aes(x = SY, y = Temp, Fill = Site, color = Site)) +
   geom_point(aes(x = SY, y = Temp, group = Site, fill = Site, , shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2)
 
-
-
-
 ################################################################################
+
 ##DO% by Islands##
 ggplot(data = wqclassification) +
   geom_boxplot(aes(x = SY, y = DO_percent, Fill = Island, color = Island)) +
