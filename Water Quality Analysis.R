@@ -134,6 +134,545 @@ wqclassification$SY <- as.factor(wqclassification$SY)
 
 ################################################################################
 
+#Salinity WQ Classification for Forest Type and syringe use#
+wqclassificationFringe <- wqraw %>% 
+  select(Island:Date_Survey, Salinity_ppt, Syringe_used) %>% 
+  filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/21/2021") 
+         | Date_Survey == ("10/14/2021") 
+         | Date_Survey == ("10/22/2021") 
+         | Date_Survey == ("11/30/2021") 
+         | Date_Survey == ("10/1/2021") 
+         | Date_Survey == ("10/12/2021") 
+         | Date_Survey == ("9/23/2021") 
+         | Date_Survey == ("10/19/2021") 
+         | Date_Survey == ("2/22/2022") 
+         | Date_Survey == ("10/15/2021") 
+         | Date_Survey == ("9/28/2021") 
+         | Date_Survey == ("9/30/2021") 
+         | Date_Survey == ("10/28/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("10/26/2021") 
+         | Date_Survey == ("4/5/2022") 
+         | Date_Survey == ("10/25/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("12/3/2021") 
+         | Date_Survey == ("12/8/2021") 
+         | Date_Survey == ("12/2/2021") 
+         | Date_Survey == ("12/10/2021") 
+         | Date_Survey == ("2/25/2022") 
+         | Date_Survey == ("11/15/2021") 
+         | Date_Survey == ("11/17/2021") 
+         | Date_Survey == ("11/18/2021") 
+         | Date_Survey == ("11/16/2021") 
+         | Date_Survey == ("11/22/2022") 
+         | Date_Survey == ("11/23/2022") 
+         | Date_Survey == ("11/11/2022") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("1/12/2023") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("2/22/2023") 
+         | Date_Survey == ("2/21/2023") 
+         | Date_Survey == ("2/23/2023") 
+         | Date_Survey == ("1/23/2023") 
+         | Date_Survey == ("2/16/2023") 
+         | Date_Survey == ("2/15/2023") 
+         | Date_Survey == ("2/17/2023") 
+         | Date_Survey == ("6/5/2024") 
+         | Date_Survey == ("6/10/2024") 
+         | Date_Survey == ("6/17/2024") 
+         | Date_Survey == ("6/11/2024") 
+         | Date_Survey == ("7/9/2024") 
+         | Date_Survey == ("7/19/2024") 
+         | Date_Survey == ("6/7/2024") 
+         | Date_Survey == ("6/12/2024") 
+         | Date_Survey == ("6/18/2024") 
+         | Date_Survey == ("7/8/2024") 
+         | Date_Survey == ("7/5/2024") 
+         | Date_Survey == ("6/13/2024") 
+         | Date_Survey == ("7/17/2024") 
+         | Date_Survey == ("8/6/2024") 
+         | Date_Survey == ("8/9/2024") 
+         | Date_Survey == ("7/18/2024") 
+         | Date_Survey == ("9/18/2024") 
+         | Date_Survey == ("8/7/2024") 
+         | Date_Survey == ("8/8/2024") 
+         | Date_Survey == ("7/22/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/23/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/22/2024")) %>% 
+  mutate(Forest_Type = case_when(
+    Site %in% c("Krause Lagoon", "Salt River", "Mary Creek", "Princess Bay", "Turner Bay", "Water Creek", "Brewers Bay", "Mandahl Bay", "STEER Fringe", "Vessup Bay") ~ "Fringe"
+  )) %>% 
+  group_by(SY)
+
+
+wqclassificationFringe$SY <- as.factor(wqclassificationFringe$SY)
+
+#Now Just look at the Fringe sites that have AVGE#
+#now do AVGE
+AVGE<-TreeMeasurements%>%
+  filter(Species=="AVGE")%>%
+  filter(!(is.na(Site)))
+
+unique(AVGE$Site)
+# "Salt River"    "Reef Bay"      "Lameshur Bay"  "Mary Creek"    "Southgate"    
+#[6] "Compass Point" "Great Pond"    "Water Creek"   "STEER Basin"
+
+
+AVGEwqFringe<-wqclassificationFringe%>%
+  filter(Site %in% AVGE$Site)
+
+
+AVGEwqFringe<-AVGEwqFringe%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+AVGEwqFringe<-AVGEwqFringe%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+AVGEwqFringe$Syringe_used<-as.factor(AVGEwqFringe$Syringe_used)
+AVGEwqFringe$SY<-as.factor(AVGEwqFringe$SY)
+
+#Now do RHMA
+RHMA<-TreeMeasurements%>%
+  filter(Species=="RHMA")%>%
+  filter(!(is.na(Site)))
+
+unique(RHMA$Site)
+
+
+
+RHMAwqFringe<-wqclassificationFringe%>%
+  filter(Site %in% RHMA$Site)
+
+
+RHMAwqFringe<-RHMAwqFringe%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+RHMAwqFringe<-RHMAwqFringe%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+RHMAwqFringe$Syringe_used<-as.factor(RHMAwqFringe$Syringe_used)
+RHMAwqFringe$SY<-as.factor(RHMAwqFringe$SY)
+
+#Now do LARA
+LARA<-TreeMeasurements%>%
+  filter(Species=="LARA")%>%
+  filter(!(is.na(Site)))
+
+unique(LARA$Site)
+
+
+
+LARAwqFringe<-wqclassificationFringe%>%
+  filter(Site %in% LARA$Site)
+
+
+LARAwqFringe<-LARAwqFringe%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+LARAwqFringe<-LARAwqFringe%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+LARAwqFringe$Syringe_used<-as.factor(LARAwqFringe$Syringe_used)
+LARAwqFringe$SY<-as.factor(LARAwqFringe$SY)
+
+#################################################################################
+#Salinity WQ Classification for Forest Type and syringe use#
+wqclassificationSP <- wqraw %>% 
+  select(Island:Date_Survey, Salinity_ppt, Syringe_used) %>% 
+  filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/21/2021") 
+         | Date_Survey == ("10/14/2021") 
+         | Date_Survey == ("10/22/2021") 
+         | Date_Survey == ("11/30/2021") 
+         | Date_Survey == ("10/1/2021") 
+         | Date_Survey == ("10/12/2021") 
+         | Date_Survey == ("9/23/2021") 
+         | Date_Survey == ("10/19/2021") 
+         | Date_Survey == ("2/22/2022") 
+         | Date_Survey == ("10/15/2021") 
+         | Date_Survey == ("9/28/2021") 
+         | Date_Survey == ("9/30/2021") 
+         | Date_Survey == ("10/28/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("10/26/2021") 
+         | Date_Survey == ("4/5/2022") 
+         | Date_Survey == ("10/25/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("12/3/2021") 
+         | Date_Survey == ("12/8/2021") 
+         | Date_Survey == ("12/2/2021") 
+         | Date_Survey == ("12/10/2021") 
+         | Date_Survey == ("2/25/2022") 
+         | Date_Survey == ("11/15/2021") 
+         | Date_Survey == ("11/17/2021") 
+         | Date_Survey == ("11/18/2021") 
+         | Date_Survey == ("11/16/2021") 
+         | Date_Survey == ("11/22/2022") 
+         | Date_Survey == ("11/23/2022") 
+         | Date_Survey == ("11/11/2022") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("1/12/2023") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("2/22/2023") 
+         | Date_Survey == ("2/21/2023") 
+         | Date_Survey == ("2/23/2023") 
+         | Date_Survey == ("1/23/2023") 
+         | Date_Survey == ("2/16/2023") 
+         | Date_Survey == ("2/15/2023") 
+         | Date_Survey == ("2/17/2023") 
+         | Date_Survey == ("6/5/2024") 
+         | Date_Survey == ("6/10/2024") 
+         | Date_Survey == ("6/17/2024") 
+         | Date_Survey == ("6/11/2024") 
+         | Date_Survey == ("7/9/2024") 
+         | Date_Survey == ("7/19/2024") 
+         | Date_Survey == ("6/7/2024") 
+         | Date_Survey == ("6/12/2024") 
+         | Date_Survey == ("6/18/2024") 
+         | Date_Survey == ("7/8/2024") 
+         | Date_Survey == ("7/5/2024") 
+         | Date_Survey == ("6/13/2024") 
+         | Date_Survey == ("7/17/2024") 
+         | Date_Survey == ("8/6/2024") 
+         | Date_Survey == ("8/9/2024") 
+         | Date_Survey == ("7/18/2024") 
+         | Date_Survey == ("9/18/2024") 
+         | Date_Survey == ("8/7/2024") 
+         | Date_Survey == ("8/8/2024") 
+         | Date_Survey == ("7/22/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/23/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/22/2024")) %>% 
+  mutate(Forest_Type = case_when(
+    Site %in% c("Great Pond", "Southgate", "Francis Bay", "Lameshur Bay", "Reef Bay", "Compass Point", "Perseverance Bay") ~ "Salt Pond"
+  )) %>% 
+  group_by(SY)
+
+
+wqclassificationSP$SY <- as.factor(wqclassificationSP$SY)
+
+#Now Just look at the Fringe sites that have AVGE#
+#now do AVGE
+AVGE<-TreeMeasurements%>%
+  filter(Species=="AVGE")%>%
+  filter(!(is.na(Site)))
+
+unique(AVGE$Site)
+# "Salt River"    "Reef Bay"      "Lameshur Bay"  "Mary Creek"    "Southgate"    
+#[6] "Compass Point" "Great Pond"    "Water Creek"   "STEER Basin"
+
+
+AVGEwqSP<-wqclassificationSP%>%
+  filter(Site %in% AVGE$Site)
+
+
+AVGEwqSP<-AVGEwqSP%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+AVGEwqSP<-AVGEwqSP%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+AVGEwqSP$Syringe_used<-as.factor(AVGEwqSP$Syringe_used)
+AVGEwqSP$SY<-as.factor(AVGEwqSP$SY)
+
+#Now do RHMA
+RHMA<-TreeMeasurements%>%
+  filter(Species=="RHMA")%>%
+  filter(!(is.na(Site)))
+
+unique(RHMA$Site)
+
+
+
+RHMAwqSP<-wqclassificationSP%>%
+  filter(Site %in% RHMA$Site)
+
+
+RHMAwqSP<-RHMAwqSP%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+RHMAwqSP<-RHMAwqSP%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+RHMAwqSP$Syringe_used<-as.factor(RHMAwqSP$Syringe_used)
+RHMAwqSP$SY<-as.factor(RHMAwqSP$SY)
+
+#Now do LARA
+LARA<-TreeMeasurements%>%
+  filter(Species=="LARA")%>%
+  filter(!(is.na(Site)))
+
+unique(LARA$Site)
+
+
+
+LARAwqSP<-wqclassificationSP%>%
+  filter(Site %in% LARA$Site)
+
+
+LARAwqSP<-LARAwqSP%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+LARAwqSP<-LARAwqSP%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+LARAwqSP$Syringe_used<-as.factor(LARAwqSP$Syringe_used)
+LARAwqSP$SY<-as.factor(LARAwqSP$SY)
+
+#################################################################################
+
+#Salinity WQ Classification for Forest Type and syringe use#
+wqclassificationBasin <- wqraw %>% 
+  select(Island:Date_Survey, Salinity_ppt, Syringe_used) %>% 
+  filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/20/2021") 
+         | Date_Survey == ("9/21/2021") 
+         | Date_Survey == ("10/14/2021") 
+         | Date_Survey == ("10/22/2021") 
+         | Date_Survey == ("11/30/2021") 
+         | Date_Survey == ("10/1/2021") 
+         | Date_Survey == ("10/12/2021") 
+         | Date_Survey == ("9/23/2021") 
+         | Date_Survey == ("10/19/2021") 
+         | Date_Survey == ("2/22/2022") 
+         | Date_Survey == ("10/15/2021") 
+         | Date_Survey == ("9/28/2021") 
+         | Date_Survey == ("9/30/2021") 
+         | Date_Survey == ("10/28/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("10/26/2021") 
+         | Date_Survey == ("4/5/2022") 
+         | Date_Survey == ("10/25/2021") 
+         | Date_Survey == ("10/29/2021") 
+         | Date_Survey == ("12/3/2021") 
+         | Date_Survey == ("12/8/2021") 
+         | Date_Survey == ("12/2/2021") 
+         | Date_Survey == ("12/10/2021") 
+         | Date_Survey == ("2/25/2022") 
+         | Date_Survey == ("11/15/2021") 
+         | Date_Survey == ("11/17/2021") 
+         | Date_Survey == ("11/18/2021") 
+         | Date_Survey == ("11/16/2021") 
+         | Date_Survey == ("11/22/2022") 
+         | Date_Survey == ("11/23/2022") 
+         | Date_Survey == ("11/11/2022") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("1/12/2023") 
+         | Date_Survey == ("11/21/2022") 
+         | Date_Survey == ("2/22/2023") 
+         | Date_Survey == ("2/21/2023") 
+         | Date_Survey == ("2/23/2023") 
+         | Date_Survey == ("1/23/2023") 
+         | Date_Survey == ("2/16/2023") 
+         | Date_Survey == ("2/15/2023") 
+         | Date_Survey == ("2/17/2023") 
+         | Date_Survey == ("6/5/2024") 
+         | Date_Survey == ("6/10/2024") 
+         | Date_Survey == ("6/17/2024") 
+         | Date_Survey == ("6/11/2024") 
+         | Date_Survey == ("7/9/2024") 
+         | Date_Survey == ("7/19/2024") 
+         | Date_Survey == ("6/7/2024") 
+         | Date_Survey == ("6/12/2024") 
+         | Date_Survey == ("6/18/2024") 
+         | Date_Survey == ("7/8/2024") 
+         | Date_Survey == ("7/5/2024") 
+         | Date_Survey == ("6/13/2024") 
+         | Date_Survey == ("7/17/2024") 
+         | Date_Survey == ("8/6/2024") 
+         | Date_Survey == ("8/9/2024") 
+         | Date_Survey == ("7/18/2024") 
+         | Date_Survey == ("9/18/2024") 
+         | Date_Survey == ("8/7/2024") 
+         | Date_Survey == ("8/8/2024") 
+         | Date_Survey == ("7/22/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/23/2024") 
+         | Date_Survey == ("7/24/2024") 
+         | Date_Survey == ("7/22/2024")) %>% 
+  mutate(Forest_Type = case_when(
+    Site %in% c("STEER Basin", "Magens Bay") ~ "Basin"
+  )) %>% 
+  group_by(SY)
+
+
+wqclassificationBasin$SY <- as.factor(wqclassificationBasin$SY)
+
+#Now Just look at the Fringe sites that have AVGE#
+#now do AVGE
+AVGE<-TreeMeasurements%>%
+  filter(Species=="AVGE")%>%
+  filter(!(is.na(Site)))
+
+unique(AVGE$Site)
+# "Salt River"    "Reef Bay"      "Lameshur Bay"  "Mary Creek"    "Southgate"    
+#[6] "Compass Point" "Great Pond"    "Water Creek"   "STEER Basin"
+
+
+AVGEwqBasin<-wqclassificationBasin%>%
+  filter(Site %in% AVGE$Site)
+
+
+AVGEwqBasin<-AVGEwqBasin%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+AVGEwqBasin<-AVGEwqBasin%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+AVGEwqBasin$Syringe_used<-as.factor(AVGEwqBasin$Syringe_used)
+AVGEwqBasin$SY<-as.factor(AVGEwqBasin$SY)
+
+#Now do RHMA
+RHMA<-TreeMeasurements%>%
+  filter(Species=="RHMA")%>%
+  filter(!(is.na(Site)))
+
+unique(RHMA$Site)
+
+
+
+RHMAwqBasin<-wqclassificationBasin%>%
+  filter(Site %in% RHMA$Site)
+
+
+RHMAwqBasin<-RHMAwqBasin%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+RHMAwqBasin<-RHMAwqBasin%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+RHMAwqBasin$Syringe_used<-as.factor(RHMAwqBasin$Syringe_used)
+RHMAwqBasin$SY<-as.factor(RHMAwqBasin$SY)
+
+#Now do LARA
+LARA<-TreeMeasurements%>%
+  filter(Species=="LARA")%>%
+  filter(!(is.na(Site)))
+
+unique(LARA$Site)
+
+
+
+LARAwqBasin<-wqclassificationBasin%>%
+  filter(Site %in% LARA$Site)
+
+
+LARAwqBasin<-LARAwqBasin%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+LARAwqBasin<-LARAwqBasin%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  filter(!(is.na(Forest_Type)))
+
+
+
+LARAwqBasin$Syringe_used<-as.factor(LARAwqBasin$Syringe_used)
+LARAwqBasin$SY<-as.factor(LARAwqBasin$SY)
+
+#################################################################################
+
 
 #WQ classification for just the STX sites#
 wqSTXTemp <- wqraw %>% 
@@ -1052,6 +1591,48 @@ ggplot() +
   geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
+#Single Forest Type (Fringe), color by site, AVGE species
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = AVGEwqFringe, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = AVGEwqFringe, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Salt Pond), color by site, AVGE species
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = AVGEwqSP, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = AVGEwqSP, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Basin), color by site, AVGE species
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = AVGEwqBasin, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = AVGEwqBasin, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
 #Salinity of RHMA grouped by Forest Type#
 
 ggplot() +
@@ -1066,6 +1647,48 @@ ggplot() +
   geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
+#Single Forest Type (Fringe), color by site, RHMA species
+
+ggplot() +
+  geom_rect(data = salrectRHMA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineRHMA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("RHMA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = RHMAwqFringe, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = RHMAwqFringe, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Salt Pond), color by site, RHMA species
+
+ggplot() +
+  geom_rect(data = salrectRHMA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineRHMA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("RHMA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = RHMAwqSP, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = RHMAwqSP, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Basin), color by site, RHMA species
+
+ggplot() +
+  geom_rect(data = salrectRHMA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineRHMA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("RHMA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = RHMAwqBasin, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = RHMAwqBasin, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
 #Salinity of LARA grouped by Forest Type#
 
 ggplot() +
@@ -1078,6 +1701,48 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Fringe), color by site, RHMA species
+
+ggplot() +
+  geom_rect(data = salrectLARA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineLARA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("LARA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = LARAwqFringe, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = LARAwqFringe, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Salt Pond), color by site, RHMA species
+
+ggplot() +
+  geom_rect(data = salrectLARA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineLARA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("LARA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = LARAwqSP, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = LARAwqSP, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Single Forest Type (Basin), color by site, RHMA species
+
+ggplot() +
+  geom_rect(data = salrectLARA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineLARA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("LARA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = LARAwqBasin, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = LARAwqBasin, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
   labs(x = "Year", y = "Salinity (ppt)")
 
 
