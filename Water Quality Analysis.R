@@ -53,6 +53,77 @@ glimpse(wqraw)
 #wqbrewers$SY <- as.factor(wqbrewers$SY)
 ###############################################################################
 
+
+
+colors<-c("#4d4b4a","darkgrey","salmon4","#c19a6b","#9b111e","#c21e56")
+
+
+#"maroon","pink"
+
+Trees24<-TreeMeasurements%>%
+  filter(SY=="2024")%>%
+  group_by(SY,Site, Plot, Species, Mortality)%>%
+  summarise(N=n())%>%
+  filter(!is.na(Mortality))%>%
+  filter(!is.na(Site))%>%
+  filter(Species=="RHMA"|Species=="LARA"|Species=="AVGE")%>%
+  mutate(
+    Mortality=recode(Mortality,
+                     "Dying"="Alive")
+  )%>%
+  unite(col=X, sep=" ",Site, Plot, remove=FALSE)%>%
+  unite(col=SpMortality, sep=" ", Species, Mortality, remove=FALSE)%>%
+  ggplot()+
+  geom_col(aes(x=X, y=N, fill=SpMortality, position="stack"))+
+  theme(axis.text.x = element_text(angle=45, vjust = 1, hjust=1))+
+  scale_fill_manual(values=colors)
+
+Trees24
+
+
+
+Trees22<-TreeMeasurements%>%
+  filter(SY=="2022")%>%
+  group_by(SY,Site, Plot, Species, Mortality)%>%
+  summarise(N=n())%>%
+  filter(!is.na(Mortality))%>%
+  filter(!is.na(Site))%>%
+  filter(Species=="RHMA"|Species=="LARA"|Species=="AVGE")%>%
+  mutate(
+    Mortality=recode(Mortality,
+                     "Dying"="Alive")
+  )%>%
+  unite(col=X, sep=" ",Site, Plot, remove=FALSE)%>%
+  unite(col=SpMortality, sep=" ", Species, Mortality, remove=FALSE)%>%
+  ggplot()+
+  geom_col(aes(x=X, y=N, fill=SpMortality, position="stack"))+
+  theme(axis.text.x = element_text(angle=45, vjust = 1, hjust=1))+
+  scale_fill_manual(values=colors)
+
+Trees22
+
+Treeees<-Trees22/Trees24
+Treeees
+
+#total trees by species
+Trees1<-TreeMeasurements%>%
+  group_by(Species, Mortality)%>%
+  summarise(N=n())%>%
+  filter(!is.na(Mortality))%>%
+  filter(Species=="RHMA"|Species=="LARA"|Species=="AVGE")%>%
+  mutate(
+    Mortality=recode(Mortality,
+                     "Dying"="Alive")
+  )%>%
+  unite(col=SpMortality, sep=" ", Species, Mortality, remove=FALSE)%>%
+  ggplot()+
+  geom_col(aes(x=Species, y=N, fill=SpMortality, position="stack"))+
+  theme(axis.text.x = element_text(angle=45))+
+  scale_fill_manual(values=colors)
+
+Trees1
+#################################################################################
+
 #All WQ Classification for Island and syringe use#
 wqclassification <- wqraw %>% 
   select(Island:Date_Survey, Water_depth:Syringe_used) %>% 
@@ -127,6 +198,7 @@ wqclassification <- wqraw %>%
     Site %in% c("Krause Lagoon", "Salt River", "Mary Creek", "Princess Bay", "Turner Bay", "Water Creek", "Brewers Bay", "Mandahl Bay", "STEER Fringe", "Vessup Bay") ~ "Fringe",
     Site %in% c("STEER Basin", "Magens Bay") ~ "Basin"
   )) %>% 
+  unite(col=SitePlot, sep=" ",Site, Plot, remove=FALSE) %>% 
   group_by(SY)
 
 
@@ -776,41 +848,47 @@ RHMASTXTemp<-RHMASTXTemp%>%
 #Here we try to incorporate STX bouy data#
 
 STXtemp22 <- STXtempraw22 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "2") %>% 
   mutate(averagetemp = mean(Temp))
 
 STXtemp22$Year <- as.factor(STXtemp22$Year)
-#27.97864
+#26.45459
+glimpse(STXtemp22)
 
 STXtemp23 <- STXtempraw23 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "2" | Month == "1") %>% 
   mutate(averagetemp = mean(Temp))
 
 STXtemp23$Year <- as.factor(STXtemp23$Year)
-#28.58
+#26.42533
+glimpse(STXtemp23)
 
 STXtemp24 <- STXtempraw24 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "6" | Month == "7" | Month == "8") %>% 
   mutate(averagetemp = mean(Temp))
 
 STXtemp24$Year <- as.factor(STXtemp24$Year)
-#29.19874
+#30.20092
+glimpse(STXtemp24)
 
 STXtemppoints <- data.frame(
   x = c(2022, 2023, 2024),
-  y = c(27.97864, 28.58, 29.19874)
+  y = c(26.45459, 26.42533, 30.20092)
 )
 STXtemppoints$x<-as.factor(STXtemppoints$x)
 
 STXtemppointslimit <- data.frame(
   x = c(2022, 2023, 2024),
-  y = c(36.97864, 37.58, 38.19874)
+  y = c(35.45459, 35.42533, 39.20092)
 )
 STXtemppointslimit$x<-as.factor(STXtemppointslimit$x)
 
@@ -921,41 +999,47 @@ RHMASTTTemp<-RHMASTTTemp%>%
 #Here we try to incorporate STT bouy data#
 
 STTtemp22 <- STTtempraw22 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "2") %>% 
   mutate(averagetemp = mean(Temp))
 
 STTtemp22$Year <- as.factor(STTtemp22$Year)
-#28.20127
+#26.36379
+glimpse(STTtemp22)
 
 STTtemp23 <- STTtempraw23 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "2" | Month == "1") %>% 
   mutate(averagetemp = mean(Temp))
 
 STTtemp23$Year <- as.factor(STTtemp23$Year)
-#27.66023
+#26.59738
+glimpse(STTtemp23)
 
 STTtemp24 <- STTtempraw24 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "6" | Month == "7" | Month == "8") %>% 
   mutate(averagetemp = mean(Temp))
 
 STTtemp24$Year <- as.factor(STTtemp24$Year)
-#29.701
+#30.36433
+glimpse(STTtemp24)
 
 STTtemppoints <- data.frame(
   x = c(2022, 2023, 2024),
-  y = c(28.20127, 27.66023, 29.701)
+  y = c(26.36379, 26.59738, 30.36433)
 )
 STTtemppoints$x<-as.factor(STTtemppoints$x)
 
 STTtemppointslimit <- data.frame(
   x = c(2022, 2023, 2024),
-  y = c(37.20127, 36.66023, 38.701)
+  y = c(35.36379, 35.59738, 39.36433)
 )
 STTtemppointslimit$x<-as.factor(STTtemppointslimit$x)
 
@@ -1066,41 +1150,47 @@ RHMASTJTemp<-RHMASTJTemp%>%
 #Here we try to incorporate STJ bouy data#
 
 STJtemp22 <- STJtempraw22 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "2") %>% #No data for month 2#
   mutate(averagetemp = mean(Temp))
 
 STJtemp22$Year <- as.factor(STJtemp22$Year)
-#28.49283
+#26.72358
+glimpse(STJtemp22)
 
 STJtemp23 <- STJtempraw23 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "1" | Month == "2") %>%
   mutate(averagetemp = mean(Temp))
 
 STJtemp23$Year <- as.factor(STJtemp23$Year)
-#28.82254
+#26.53573
+glimpse(STJtemp23)
 
 STJtemp24 <- STJtempraw24 %>% 
-  rename(Year = V1, Temp = V15) %>% 
-  select(Year, Temp) %>%
+  rename(Year = V1, Temp = V15, Month = V2) %>% 
+  select(Year, Temp, Month) %>%
   filter(Temp < 900) %>% 
+  filter(Month == "6" | Month == "7" | Month == "8") %>% #No data
   mutate(averagetemp = mean(Temp))
 
 STJtemp24$Year <- as.factor(STJtemp24$Year)
 #27.77537
+glimpse(STJtemp24)
 
 STJtemppoints <- data.frame(
   x = c(2022, 2023, 2024),
-  y = c(28.49283, 28.82254, 27.77537)
+  y = c(26.72358, 26.53573, 27.77537)
 )
 STJtemppoints$x<-as.factor(STJtemppoints$x)
 
 STJtemppointslimit <- data.frame(
   x = c(2022, 2023, 2024),
-  y = c(37.49283, 37.82254, 36.77537)
+  y = c(35.72358, 35.53573, 36.77537)
 )
 STJtemppointslimit$x<-as.factor(STJtemppointslimit$x)
 
@@ -1215,7 +1305,88 @@ unique(LARAwq$Syringe_used)
 unique(LARAwq$Site)
 #yay!!!
 
+##############################################################################
 
+
+#red mangs
+RHMAsiteplot<-TreeMeasurements%>%
+  filter(Species=="RHMA")%>%
+  unite(col=SitePlot, sep=" ",Site, Plot, remove=FALSE)
+
+RHMAwqsiteplot<-wqclassification%>%
+  filter(SitePlot %in% RHMAsiteplot$SitePlot)
+
+#Sort the syringe uses
+RHMAwqsiteplot<-RHMAwqsiteplot%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+RHMAwqsiteplot<-RHMAwqsiteplot%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
+
+RHMAwqsiteplot$Syringe_used<-as.factor(RHMAwqsiteplot$Syringe_used)
+RHMAwqsiteplot$SY<-as.factor(RHMAwqsiteplot$SY)
+
+#black mangs
+AVGEsiteplot<-TreeMeasurements%>%
+  filter(Species=="AVGE")%>%
+  unite(col=SitePlot, sep=" ",Site, Plot, remove=FALSE)
+
+AVGEwqsiteplot<-wqclassification%>%
+  filter(SitePlot %in% AVGEsiteplot$SitePlot)
+
+#Sort the syringe uses
+AVGEwqsiteplot<-AVGEwqsiteplot%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+AVGEwqsiteplot<-AVGEwqsiteplot%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
+
+AVGEwqsiteplot$Syringe_used<-as.factor(AVGEwqsiteplot$Syringe_used)
+AVGEwqsiteplot$SY<-as.factor(AVGEwqsiteplot$SY)
+
+#white mangs
+LARAsiteplot<-TreeMeasurements%>%
+  filter(Species=="LARA")%>%
+  unite(col=SitePlot, sep=" ",Site, Plot, remove=FALSE)
+
+LARAwqsiteplot<-wqclassification%>%
+  filter(SitePlot %in% LARAsiteplot$SitePlot)
+
+#Sort the syringe uses
+LARAwqsiteplot<-LARAwqsiteplot%>%
+  mutate(
+    Syringe_used=recode(Syringe_used,
+                        "N"="No",
+                        "Y"="Yes",
+                        "no"="No",
+                        "yes"="Yes",
+                        "n"="No")
+  )%>% 
+  filter(nzchar(as.character(Syringe_used)))
+
+LARAwqsiteplot<-LARAwqsiteplot%>%
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) 
+
+LARAwqsiteplot$Syringe_used<-as.factor(LARAwqsiteplot$Syringe_used)
+LARAwqsiteplot$SY<-as.factor(LARAwqsiteplot$SY)
+
+##############################################################################
 
 
 #salinity rectangles
@@ -1316,6 +1487,19 @@ ggplot() +
     geom_boxplot(data = AVGEwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
     labs(x = "Year", y = "Salinity (ppt)")
+
+#Salinity of all AVGE sites sorted by plots
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Site)) +
+  geom_point(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "Salinity (ppt)")
   
   #Salinity of all RHMA sites
   
@@ -1331,6 +1515,19 @@ ggplot() +
     geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
     labs(x = "Year", y = "Salinity (ppt)")
   
+  #Salinity of all RHMA sites sorted by plots
+  ggplot() +
+    geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhlineAVGE_data, 
+               aes(yintercept = y, linetype = type)) +
+    scale_linetype_manual(values = 1, 
+                          labels = ("AVGE"),
+                          name = "Physiological Limit") +
+    scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+    geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
+    labs(x = "Year", y = "Salinity (ppt)")
+  
   #Salinity of all LARA sites
   
   ggplot() +
@@ -1343,6 +1540,19 @@ ggplot() +
     scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+    labs(x = "Year", y = "Salinity (ppt)")
+
+  #Salinity of all LARA sites sorted by plots
+  ggplot() +
+    geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+    geom_hline(data = salhlineAVGE_data, 
+               aes(yintercept = y, linetype = type)) +
+    scale_linetype_manual(values = 1, 
+                          labels = ("AVGE"),
+                          name = "Physiological Limit") +
+    scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+    geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Site)) +
+    geom_point(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
     labs(x = "Year", y = "Salinity (ppt)")
   
   
@@ -1435,6 +1645,20 @@ ggplot() +
   geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
+#Salinity of AVGE plots grouped by island#
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Island)) +
+  geom_point(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
 #Salinity of RHMA grouped by island#
 
 ggplot() +
@@ -1449,6 +1673,20 @@ ggplot() +
   geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
+#Salinity of RHMA plots grouped by island#
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Island)) +
+  geom_point(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
 #Salinity of LARA grouped by island#
 
 ggplot() +
@@ -1461,6 +1699,20 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Salinity of LARA plots grouped by island#
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Island)) +
+  geom_point(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
 
@@ -1591,6 +1843,20 @@ ggplot() +
   geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
+#Salinity of AVGE plots grouped by Forest Type#
+
+ggplot() +
+  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineAVGE_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("AVGE"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
+  geom_point(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
 #Single Forest Type (Fringe), color by site, AVGE species
 
 ggplot() +
@@ -1647,6 +1913,20 @@ ggplot() +
   geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
   labs(x = "Year", y = "Salinity (ppt)")
 
+#Salinity of RHMA plots grouped by Forest Type#
+
+ggplot() +
+  geom_rect(data = salrectRHMA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineRHMA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("RHMA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
+  geom_point(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
 #Single Forest Type (Fringe), color by site, RHMA species
 
 ggplot() +
@@ -1701,6 +1981,20 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "Salinity (ppt)")
+
+#Salinity of LARA plots grouped by Forest Type#
+
+ggplot() +
+  geom_rect(data = salrectLARA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineLARA_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 1, 
+                        labels = ("LARA"),
+                        name = "Physiological Limit") +
+  scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
+  geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
+  geom_point(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
   labs(x = "Year", y = "Salinity (ppt)")
 
 #Single Forest Type (Fringe), color by site, RHMA species
