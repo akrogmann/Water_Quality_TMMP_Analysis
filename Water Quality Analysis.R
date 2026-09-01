@@ -11,6 +11,10 @@ library(readr)
 #input your data
 wqraw <- read.csv("C:/Users/adamk/Desktop/WQ Labwork/Adam WQ Dont Analyze This - Sheet1.csv")
 
+wqraw2 <- read.csv("C:/Users/adamk/Desktop/WQ Labwork/Water_Quality_TMMP_Analysis/QA_QC TMMP Data 6-25-25 - YSI Water Quality data.csv")
+
+wqcleanedraw <- read.csv("C:/Users/adamk/Desktop/WQ Labwork/Water_Quality_TMMP_Analysis/8_12_2026 AKKR TMMP Water Quality - Clean_WQSamplePoints.csv")
+
 TreeMeasurements <- read_csv("QA_QC TMMP Data 6-25-25.csv")
 
 STTtempraw22 <- read.table("STT Buoy Data.txt")
@@ -76,7 +80,8 @@ Trees24<-TreeMeasurements%>%
   ggplot()+
   geom_col(aes(x=X, y=N, fill=SpMortality, position="stack"))+
   theme(axis.text.x = element_text(angle=45, vjust = 1, hjust=1))+
-  scale_fill_manual(values=colors)
+  scale_fill_manual(values=colors) +
+  labs(title = "2024 trees")
 
 Trees24
 
@@ -98,7 +103,8 @@ Trees22<-TreeMeasurements%>%
   ggplot()+
   geom_col(aes(x=X, y=N, fill=SpMortality, position="stack"))+
   theme(axis.text.x = element_text(angle=45, vjust = 1, hjust=1))+
-  scale_fill_manual(values=colors)
+  scale_fill_manual(values=colors) +
+  labs(title = "Trees 2022")
 
 Trees22
 
@@ -119,95 +125,108 @@ Trees1<-TreeMeasurements%>%
   ggplot()+
   geom_col(aes(x=Species, y=N, fill=SpMortality, position="stack"))+
   theme(axis.text.x = element_text(angle=45))+
-  scale_fill_manual(values=colors)
+  scale_fill_manual(values=colors) +
+  labs(title = "Total trees by species")
 
 Trees1
 #################################################################################
 
 #All WQ Classification for Island and syringe use#
-wqclassification <- wqraw %>% 
-  select(Island:Date_Survey, Water_depth:Syringe_used) %>% 
-  filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
-         | Date_Survey == ("9/20/2021") 
-         | Date_Survey == ("9/21/2021") 
-         | Date_Survey == ("10/14/2021") 
-         | Date_Survey == ("10/22/2021") 
-         | Date_Survey == ("11/30/2021") 
-         | Date_Survey == ("10/1/2021") 
-         | Date_Survey == ("10/12/2021") 
-         | Date_Survey == ("9/23/2021") 
-         | Date_Survey == ("10/19/2021") 
-         | Date_Survey == ("2/22/2022") 
-         | Date_Survey == ("10/15/2021") 
-         | Date_Survey == ("9/28/2021") 
-         | Date_Survey == ("9/30/2021") 
-         | Date_Survey == ("10/28/2021") 
-         | Date_Survey == ("10/29/2021") 
-         | Date_Survey == ("10/26/2021") 
-         | Date_Survey == ("4/5/2022") 
-         | Date_Survey == ("10/25/2021") 
-         | Date_Survey == ("10/29/2021") 
-         | Date_Survey == ("12/3/2021") 
-         | Date_Survey == ("12/8/2021") 
-         | Date_Survey == ("12/2/2021") 
-         | Date_Survey == ("12/10/2021") 
-         | Date_Survey == ("2/25/2022") 
-         | Date_Survey == ("11/15/2021") 
-         | Date_Survey == ("11/17/2021") 
-         | Date_Survey == ("11/18/2021") 
-         | Date_Survey == ("11/16/2021") 
-         | Date_Survey == ("11/22/2022") 
-         | Date_Survey == ("11/23/2022") 
-         | Date_Survey == ("11/11/2022") 
-         | Date_Survey == ("11/21/2022") 
-         | Date_Survey == ("1/12/2023") 
-         | Date_Survey == ("11/21/2022") 
-         | Date_Survey == ("2/22/2023") 
-         | Date_Survey == ("2/21/2023") 
-         | Date_Survey == ("2/23/2023") 
-         | Date_Survey == ("1/23/2023") 
-         | Date_Survey == ("2/16/2023") 
-         | Date_Survey == ("2/15/2023") 
-         | Date_Survey == ("2/17/2023") 
-         | Date_Survey == ("6/5/2024") 
-         | Date_Survey == ("6/10/2024") 
-         | Date_Survey == ("6/17/2024") 
-         | Date_Survey == ("6/11/2024") 
-         | Date_Survey == ("7/9/2024") 
-         | Date_Survey == ("7/19/2024") 
-         | Date_Survey == ("6/7/2024") 
-         | Date_Survey == ("6/12/2024") 
-         | Date_Survey == ("6/18/2024") 
-         | Date_Survey == ("7/8/2024") 
-         | Date_Survey == ("7/5/2024") 
-         | Date_Survey == ("6/13/2024") 
-         | Date_Survey == ("7/17/2024") 
-         | Date_Survey == ("8/6/2024") 
-         | Date_Survey == ("8/9/2024") 
-         | Date_Survey == ("7/18/2024") 
-         | Date_Survey == ("9/18/2024") 
-         | Date_Survey == ("8/7/2024") 
-         | Date_Survey == ("8/8/2024") 
-         | Date_Survey == ("7/22/2024") 
-         | Date_Survey == ("7/24/2024") 
-         | Date_Survey == ("7/23/2024") 
-         | Date_Survey == ("7/24/2024") 
-         | Date_Survey == ("7/22/2024")) %>% 
+wqclassification <- wqcleanedraw %>% 
+  select(Island:Date_Survey, Water_depth:Syringe_used, Notes) %>% 
+  #filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
+  #       | Date_Survey == ("9/20/2021") 
+   #      | Date_Survey == ("9/21/2021") 
+    #     | Date_Survey == ("10/14/2021") 
+     #    | Date_Survey == ("10/22/2021") 
+      #   | Date_Survey == ("11/30/2021") 
+       #  | Date_Survey == ("10/1/2021") 
+        # | Date_Survey == ("10/12/2021") 
+        # | Date_Survey == ("9/23/2021") 
+        # | Date_Survey == ("10/19/2021") 
+        # | Date_Survey == ("2/22/2022") 
+        # | Date_Survey == ("10/15/2021") 
+        # | Date_Survey == ("9/28/2021") 
+        # | Date_Survey == ("9/30/2021") 
+        # | Date_Survey == ("10/28/2021") 
+        # | Date_Survey == ("10/29/2021") 
+        # | Date_Survey == ("10/26/2021") 
+        # | Date_Survey == ("4/5/2022") 
+        # | Date_Survey == ("10/25/2021") 
+        # | Date_Survey == ("10/29/2021") 
+        # | Date_Survey == ("12/3/2021") 
+        # | Date_Survey == ("12/8/2021") 
+        # | Date_Survey == ("12/2/2021") 
+        # | Date_Survey == ("12/10/2021") 
+        # | Date_Survey == ("2/25/2022") 
+        # | Date_Survey == ("11/15/2021") 
+        # | Date_Survey == ("11/17/2021") 
+        # | Date_Survey == ("11/18/2021") 
+        # | Date_Survey == ("11/16/2021") 
+        # | Date_Survey == ("11/22/2022") 
+        # | Date_Survey == ("11/23/2022") 
+        # | Date_Survey == ("11/11/2022") 
+        # | Date_Survey == ("11/21/2022") 
+        # | Date_Survey == ("1/12/2023") 
+        # | Date_Survey == ("11/21/2022") 
+        # | Date_Survey == ("2/22/2023") 
+        # | Date_Survey == ("2/21/2023") 
+        # | Date_Survey == ("2/23/2023") 
+        # | Date_Survey == ("1/23/2023") 
+        # | Date_Survey == ("2/16/2023") 
+        # | Date_Survey == ("2/15/2023") 
+        # | Date_Survey == ("2/17/2023") 
+        # | Date_Survey == ("6/5/2024") 
+        # | Date_Survey == ("6/10/2024") 
+        # | Date_Survey == ("6/17/2024") 
+        # | Date_Survey == ("6/11/2024") 
+        # | Date_Survey == ("7/9/2024") 
+        # | Date_Survey == ("7/19/2024") 
+        # | Date_Survey == ("6/7/2024") 
+        # | Date_Survey == ("6/12/2024") 
+        # | Date_Survey == ("6/18/2024") 
+        # | Date_Survey == ("7/8/2024") 
+        # | Date_Survey == ("7/5/2024") 
+        # | Date_Survey == ("6/13/2024") 
+        # | Date_Survey == ("7/17/2024") 
+        # | Date_Survey == ("8/6/2024") 
+        # | Date_Survey == ("8/9/2024") 
+        # | Date_Survey == ("7/18/2024") 
+        # | Date_Survey == ("9/18/2024") 
+        # | Date_Survey == ("8/7/2024") 
+        # | Date_Survey == ("8/8/2024") 
+        # | Date_Survey == ("7/22/2024") 
+        # | Date_Survey == ("7/24/2024") 
+        # | Date_Survey == ("7/23/2024") 
+        # | Date_Survey == ("7/24/2024") 
+        # | Date_Survey == ("7/22/2024")) %>% 
   mutate(Forest_Type = case_when(
     Site %in% c("Great Pond", "Southgate", "Francis Bay", "Lameshur Bay", "Reef Bay", "Compass Point", "Perseverance Bay") ~ "Salt Pond",
     Site %in% c("Krause Lagoon", "Salt River", "Mary Creek", "Princess Bay", "Turner Bay", "Water Creek", "Brewers Bay", "Mandahl Bay", "STEER Fringe", "Vessup Bay") ~ "Fringe",
     Site %in% c("STEER Basin", "Magens Bay") ~ "Basin"
   )) %>% 
   unite(col=SitePlot, sep=" ",Site, Plot, remove=FALSE) %>% 
-  group_by(SY)
+  group_by(SY) %>% 
+  distinct() %>% 
+  mutate(
+    Plot=recode(Plot,
+                "C-OUT"="C",
+                "B-IN"="B",
+                "B-OUT"="B",
+                "E-IN"="C")) 
 
 
 wqclassification$SY <- as.factor(wqclassification$SY)
 
+
+
+
+
+
 ################################################################################
 
 #Salinity WQ Classification for Forest Type and syringe use#
-wqclassificationFringe <- wqraw %>% 
+wqclassificationFringe <- wqcleanedraw %>% 
   select(Island:Date_Survey, Salinity_ppt, Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
@@ -310,7 +329,7 @@ AVGEwqFringe<-AVGEwqFringe%>%
   filter(nzchar(as.character(Syringe_used)))
 
 AVGEwqFringe<-AVGEwqFringe%>%
-  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>% 
+  mutate(Syringe_used=replace_na(Syringe_used, "Unknown")) %>%
   filter(!(is.na(Forest_Type)))
 
 
@@ -386,7 +405,7 @@ LARAwqFringe$SY<-as.factor(LARAwqFringe$SY)
 
 #################################################################################
 #Salinity WQ Classification for Forest Type and syringe use#
-wqclassificationSP <- wqraw %>% 
+wqclassificationSP <- wqcleanedraw %>% 
   select(Island:Date_Survey, Salinity_ppt, Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
@@ -566,7 +585,7 @@ LARAwqSP$SY<-as.factor(LARAwqSP$SY)
 #################################################################################
 
 #Salinity WQ Classification for Forest Type and syringe use#
-wqclassificationBasin <- wqraw %>% 
+wqclassificationBasin <- wqcleanedraw %>% 
   select(Island:Date_Survey, Salinity_ppt, Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
@@ -747,7 +766,7 @@ LARAwqBasin$SY<-as.factor(LARAwqBasin$SY)
 
 
 #WQ classification for just the STX sites#
-wqSTXTemp <- wqraw %>% 
+wqSTXTemp <- wqcleanedraw %>% 
   select(Island:Date_Survey, Temp, Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
@@ -895,7 +914,7 @@ STXtemppointslimit$x<-as.factor(STXtemppointslimit$x)
 ################################################################################
 
 #WQ classification for just the STT sites#
-wqSTTTemp <- wqraw %>% 
+wqSTTTemp <- wqcleanedraw %>% 
   select(Island:Date_Survey, Temp, Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
@@ -1046,7 +1065,7 @@ STTtemppointslimit$x<-as.factor(STTtemppointslimit$x)
 ################################################################################
 
 #WQ classification for just the STJ sites#
-wqSTJTemp <- wqraw %>% 
+wqSTJTemp <- wqcleanedraw %>% 
   select(Island:Date_Survey, Temp, Syringe_used) %>% 
   filter(Date_Survey == ("8/27/2021") | Date_Survey == ("9/20/2021") 
          | Date_Survey == ("9/20/2021") 
@@ -1386,6 +1405,8 @@ LARAwqsiteplot<-LARAwqsiteplot%>%
 LARAwqsiteplot$Syringe_used<-as.factor(LARAwqsiteplot$Syringe_used)
 LARAwqsiteplot$SY<-as.factor(LARAwqsiteplot$SY)
 
+AVGEwqsiteplot$pH<-as.double(AVGEwqsiteplot$pH)
+
 ##############################################################################
 
 
@@ -1441,6 +1462,10 @@ salhlineLARA_data <- data.frame(y = (50), type = factor(1),
 salhlineAVGE_data <- data.frame(y = (55), type = factor(1), 
                                 stringsAsFactors = FALSE)
 
+#Ocean salinity (35ppt)
+oceanhline_data <- data.frame(y = (35), type = factor(2), 
+                                stringsAsFactors = FALSE)
+
 
 ###Testing#####################################################################
 
@@ -1473,8 +1498,39 @@ salhlineAVGE_data <- data.frame(y = (55), type = factor(1),
     
 ###TEST Concluded ############################################################
 
-  
-##############################################################################
+####This is the most important Graph########################################
+mumcheck<- wqclassification %>% 
+  group_by(SY, Plot, Site) %>% 
+  summarize(N = n())
+unique(wqclassification$Plot)
+
+numcheck<- wqclassification %>% 
+  group_by(SY, Plot, Site) %>% 
+  filter(Site == "Great Pond")
+
+ggplot(data = wqclassification) +
+  geom_boxplot(aes(x = Site, y = Salinity_ppt)) +
+  geom_jitter(aes(x = Site, y = Salinity_ppt, color = Plot, group = Site, shape = SY), size = 1.5, width = 0.1, height = 0) +
+  geom_hline(data = oceanhline_data, 
+             aes(yintercept = y, linetype = type)) +
+  scale_linetype_manual(values = 2, 
+                        labels = ("35ppt"),
+                        name = "Average Ocean Salinity") +
+  scale_fill_manual(values = c("35ppt" = "grey3", name = "Average Ocean Salinity")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Site", y = "Salinity (ppt)", shape = "Year")
+
+
+  ###Try to rearrange x axis###
+# 1. Rearrange by explicitly stating a manual order
+df$Category <- factor(df$Category, levels = c("Low", "Medium", "High"))
+
+# 2. Plotting will now display: Low -> Medium -> High
+ggplot(df, aes(x = Category, y = Value)) + 
+  geom_bar(stat = "identity")
+
+
+#############yintercept = ##############################################################################
   #Salinity of all AVGE sites
 ggplot() +
     geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
@@ -1486,7 +1542,7 @@ ggplot() +
     scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = AVGEwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
-    labs(x = "Year", y = "Salinity (ppt)")
+    labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of all AVGE sites")
 
 #Salinity of all AVGE sites sorted by plots
 ggplot() +
@@ -1499,7 +1555,13 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of all AVGE sites sorted by plots")
+
+#pH of all AVGE sites sorted by plots
+ggplot() +
+  geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = pH, color = Site)) +
+  geom_point(data = AVGEwqsiteplot, aes(x = SY, y = pH, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "pH", title = "pH of all AVGE sites sorted by plots")
   
   #Salinity of all RHMA sites
   
@@ -1513,7 +1575,7 @@ ggplot() +
     scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = RHMAwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-    labs(x = "Year", y = "Salinity (ppt)")
+    labs(x = "Year", y = "Salinity (ppt)", title = "salinity of all RHMA sites")
   
   #Salinity of all RHMA sites sorted by plots
   ggplot() +
@@ -1526,7 +1588,13 @@ ggplot() +
     scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
-    labs(x = "Year", y = "Salinity (ppt)")
+    labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of all RHMA sites sorted by plots")
+  
+  #pH of all RHMA sites sorted by plots
+  ggplot() +
+    geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = pH, color = Site)) +
+    geom_point(data = RHMAwqsiteplot, aes(x = SY, y = pH, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
+    labs(x = "Year", y = "pH", title = "pH of all RHMA sites sorted by plots")
   
   #Salinity of all LARA sites
   
@@ -1540,7 +1608,7 @@ ggplot() +
     scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-    labs(x = "Year", y = "Salinity (ppt)")
+    labs(x = "Year", y = "Salinity (ppt)", title = "salinity of all LARA sites")
 
   #Salinity of all LARA sites sorted by plots
   ggplot() +
@@ -1553,8 +1621,13 @@ ggplot() +
     scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
-    labs(x = "Year", y = "Salinity (ppt)")
+    labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of all LARA sites sorted by plots")
   
+  #pH of all LARA sites sorted by plots
+  ggplot() +
+    geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = pH, color = Site)) +
+    geom_point(data = LARAwqsiteplot, aes(x = SY, y = pH, shape = Syringe_used,  group = Site), position = position_dodge(width = 0.75), size = 1.2) +
+    labs(x = "Year", y = "pH", title = "pH of all LARA sites sorted by plots")
   
 ##############################################################################
  #Factors of all Sites#
@@ -1570,7 +1643,7 @@ ggplot() +
     scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
     geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Site)) +
     geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Site, group = Site,), position = position_dodge(width = 0.75), size = 0.4) +
-    labs(x = "Year", y = "Salinity (ppt)")
+    labs(x = "Year", y = "Salinity (ppt)", title = "salinity of all sites")
 
 
 
@@ -1629,7 +1702,7 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island,), position = position_dodge(width = 0.75), size = 0.4) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of all sites grouped by island")
 
 #Salinity of AVGE grouped by island#
 
@@ -1643,7 +1716,7 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwq, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of AVGE grouped by island")
 
 #Salinity of AVGE plots grouped by island#
 
@@ -1657,7 +1730,14 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of AVGE plots grouped by island")
+
+#pH of AVGE plots grouped by island#
+
+ggplot() +
+  geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = pH, color = Island)) +
+  geom_point(data = AVGEwqsiteplot, aes(x = SY, y = pH, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "pH", title = "pH of AVGE plots grouped by island")
 
 #Salinity of RHMA grouped by island#
 
@@ -1671,21 +1751,28 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwq, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of RHMA grouped by island")
 
 #Salinity of RHMA plots grouped by island#
 
 ggplot() +
-  geom_rect(data = salrectAVGE_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
-  geom_hline(data = salhlineAVGE_data, 
+  geom_rect(data = salrectRHMA_df, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Ideal_Range), alpha = 0.3) +
+  geom_hline(data = salhlineRHMA_data, 
              aes(yintercept = y, linetype = type)) +
   scale_linetype_manual(values = 1, 
-                        labels = ("AVGE"),
+                        labels = ("RHMA"),
                         name = "Physiological Limit") +
-  scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
+  scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "salinity of RHMA plots grouped by island")
+
+#pH of RHMA plots grouped by island#
+
+ggplot() +
+  geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = pH, color = Island)) +
+  geom_point(data = RHMAwqsiteplot, aes(x = SY, y = pH, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "pH", title = "pH of RHMA plots grouped by island")
 
 #Salinity of LARA grouped by island#
 
@@ -1699,7 +1786,7 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of LARA grouped by island")
 
 #Salinity of LARA plots grouped by island#
 
@@ -1713,7 +1800,14 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Island)) +
   geom_point(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of LARA plots grouped by island")
+
+#pH of LARA plots grouped by island#
+
+ggplot() +
+  geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = pH, color = Island)) +
+  geom_point(data = LARAwqsiteplot, aes(x = SY, y = pH, Fill = Island, group = Island, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "pH", title = "pH of LARA plots grouped by island")
 
 
 ##Water Depth by Islands##
@@ -1736,7 +1830,8 @@ ggplot(data = RHMASTXTemp) +
   geom_line(data = STXtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
   geom_line(data = STXtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
   scale_linetype_manual(values = c(2, 1),
-                        name = "Average Yearly Temp (C)")
+                        name = "Average Yearly Temp (C)") +
+  labs(title = "STX that have RHMA sorted by island")
 
 ##STX sites that have RHMA##
 ggplot(data = RHMASTXTemp) +
@@ -1745,7 +1840,8 @@ ggplot(data = RHMASTXTemp) +
   geom_line(data = STXtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
   geom_line(data = STXtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
   scale_linetype_manual(values = c(2, 1),
-                        name = "Average Yearly Temp (C)")
+                        name = "Average Yearly Temp (C)") +
+  labs(title = "STX sites that have RHMA")
 
 ##STT that have RHMA sorted by island##
 ggplot(data = RHMASTTTemp) +
@@ -1754,7 +1850,8 @@ ggplot(data = RHMASTTTemp) +
   geom_line(data = STTtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
   geom_line(data = STTtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
   scale_linetype_manual(values = c(2, 1),
-                        name = "Average Yearly Temp (C)")
+                        name = "Average Yearly Temp (C)") +
+  labs(title = "STT that have RHMA sorted by island")
   
 
 ##STT sites that have RHMA##
@@ -1764,7 +1861,8 @@ ggplot(data = RHMASTTTemp) +
   geom_line(data = STTtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
   geom_line(data = STTtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
   scale_linetype_manual(values = c(2, 1),
-                        name = "Average Yearly Temp (C)")
+                        name = "Average Yearly Temp (C)") +
+  labs(title = "STT sites that have RHMA")
 
 ##STJ that have RHMA sorted by island##
 ggplot(data = RHMASTJTemp) +
@@ -1773,7 +1871,8 @@ ggplot(data = RHMASTJTemp) +
   geom_line(data = STJtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
   geom_line(data = STJtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
   scale_linetype_manual(values = c(2, 1),
-                        name = "Average Yearly Temp (C)")
+                        name = "Average Yearly Temp (C)") +
+  labs(title = "STJ that have RHMA sorted by island")
 
 ##STJ sites that have RHMA##
 ggplot(data = RHMASTJTemp) +
@@ -1782,7 +1881,8 @@ ggplot(data = RHMASTJTemp) +
   geom_line(data = STJtemppoints, aes(x = x, y = y, linetype = 'NOAA Data'), group = 1) +
   geom_line(data = STJtemppointslimit, aes(x = x, y = y, linetype = '9 Degree Limit'), group = 1) +
   scale_linetype_manual(values = c(2, 1),
-                        name = "Average Yearly Temp (C)")
+                        name = "Average Yearly Temp (C)") +
+  labs(title = "STJ sites that have RHMA")
 
 ################################################################################
 
@@ -1827,7 +1927,7 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "lightblue3", "AVGE" = "red", "LARA" = "purple3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = wqclassification, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = wqclassification, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type,), position = position_dodge(width = 0.75), size = 0.4) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of all sites grouped by forest type")
 
 #Salinity of AVGE grouped by Forest Type#
 
@@ -1841,7 +1941,7 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwq, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = AVGEwq, aes(x = SY, y = Salinity_ppt, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of AVGE grouped by Forest Type")
 
 #Salinity of AVGE plots grouped by Forest Type#
 
@@ -1855,7 +1955,14 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = AVGEwqsiteplot, aes(x = SY, y = Salinity_ppt, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of AVGE plots grouped by forest type")
+
+#pH of AVGE plots grouped by Forest Type#
+
+ggplot() +
+  geom_boxplot(data = AVGEwqsiteplot, aes(x = SY, y = pH, color = Forest_Type)) +
+  geom_point(data = AVGEwqsiteplot, aes(x = SY, y = pH, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "pH", title = "pH of AVGE plots grouped by forest type")
 
 #Single Forest Type (Fringe), color by site, AVGE species
 
@@ -1869,7 +1976,7 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwqFringe, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = AVGEwqFringe, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Fringe type colored by site, only AVGE")
 
 #Single Forest Type (Salt Pond), color by site, AVGE species
 
@@ -1883,7 +1990,7 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwqSP, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = AVGEwqSP, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salt Pond, colored by site, only AVGE")
 
 #Single Forest Type (Basin), color by site, AVGE species
 
@@ -1897,7 +2004,7 @@ ggplot() +
   scale_fill_manual(values = c("AVGE" = "grey3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = AVGEwqBasin, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = AVGEwqBasin, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Basin type, colored by site, AVGE")
 
 #Salinity of RHMA grouped by Forest Type#
 
@@ -1911,7 +2018,7 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwq, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = RHMAwq, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of RHMA grouped by forest type")
 
 #Salinity of RHMA plots grouped by Forest Type#
 
@@ -1925,7 +2032,14 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = RHMAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of RHMA plots grouped by Forest type")
+
+#pH of RHMA plots grouped by Forest Type#
+
+ggplot() +
+  geom_boxplot(data = RHMAwqsiteplot, aes(x = SY, y = pH, color = Forest_Type)) +
+  geom_point(data = RHMAwqsiteplot, aes(x = SY, y = pH, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
+  labs(x = "Year", y = "pH", title = "pH of RHMA plots grouped by Forest type")
 
 #Single Forest Type (Fringe), color by site, RHMA species
 
@@ -1939,7 +2053,7 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwqFringe, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = RHMAwqFringe, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Fringe, colored by site, RHMA")
 
 #Single Forest Type (Salt Pond), color by site, RHMA species
 
@@ -1953,7 +2067,7 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwqSP, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = RHMAwqSP, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salt Pond, colored by site, RHMA")
 
 #Single Forest Type (Basin), color by site, RHMA species
 
@@ -1967,7 +2081,7 @@ ggplot() +
   scale_fill_manual(values = c("RHMA" = "pink3", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = RHMAwqBasin, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = RHMAwqBasin, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 0.9) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Basin, colored by site, RHMA")
 
 #Salinity of LARA grouped by Forest Type#
 
@@ -1981,7 +2095,7 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwq, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = LARAwq, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of LARA grouped by forest type")
 
 #Salinity of LARA plots grouped by Forest Type#
 
@@ -1995,7 +2109,14 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, color = Forest_Type)) +
   geom_point(data = LARAwqsiteplot, aes(x = SY, y = Salinity_ppt, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salinity of LARA plots grouped by forest type")
+
+#pH of LARA plots grouped by Forest Type#
+
+ggplot() +
+  geom_boxplot(data = LARAwqsiteplot, aes(x = SY, y = pH, color = Forest_Type)) +
+  geom_point(data = LARAwqsiteplot, aes(x = SY, y = pH, Fill = Forest_Type, group = Forest_Type, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
+  labs(x = "Year", y = "pH", title = "pH of LARA plots grouped by forest type")
 
 #Single Forest Type (Fringe), color by site, RHMA species
 
@@ -2009,7 +2130,7 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwqFringe, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = LARAwqFringe, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Fringe, colored by site, RHMA")
 
 #Single Forest Type (Salt Pond), color by site, RHMA species
 
@@ -2023,7 +2144,7 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwqSP, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = LARAwqSP, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Salt pond, colored by site, RHMA")
 
 #Single Forest Type (Basin), color by site, RHMA species
 
@@ -2037,7 +2158,7 @@ ggplot() +
   scale_fill_manual(values = c("LARA" = "brown", name = "Fill of Ideal Salinity")) +
   geom_boxplot(data = LARAwqBasin, aes(x = SY, y = Salinity_ppt, color = Site)) +
   geom_point(data = LARAwqBasin, aes(x = SY, y = Salinity_ppt, group = Site, shape = Syringe_used), position = position_dodge(width = 0.75), size = 1.2) +
-  labs(x = "Year", y = "Salinity (ppt)")
+  labs(x = "Year", y = "Salinity (ppt)", title = "Basin, colored by site, RHMA")
 
 
 ##Water Depth by Forest Type##
